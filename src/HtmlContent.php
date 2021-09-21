@@ -18,7 +18,6 @@ class HtmlContent
         DISCARD_LINE    = 3;
 
     const
-        SCRIPT    = 'script',
         PRE       = 'pre',
         ATTRIBUTE = 'attr',
         CDATA     = 'cdata',
@@ -197,23 +196,15 @@ class HtmlContent
     }
 
     /**
-     * Wrapper to remove scripts.
-     *
-     * @return self
-     */
-    public function removeScripts(): self
-    {
-        return $this->remove(static::SCRIPT, Pattern::SCRIPT);
-    }
-
-    /**
      * Wrapper to remove preformatted elements.
      *
      * @return self
      */
     public function removePreformats(): self
     {
-        return $this->remove(static::PRE, Pattern::PRE);
+        $pattern = sprintf(Pattern::PRE, implode('|', $this->options['keep_format']));
+
+        return $this->remove(static::PRE, $pattern);
     }
 
     /**
@@ -285,16 +276,6 @@ class HtmlContent
         unset($this->parts[$type]);
 
         return $this;
-    }
-
-    /**
-     * Wrapper to restore previously removed scripts.
-     *
-     * @return self
-     */
-    public function restoreScripts(): self
-    {
-        return $this->restore(static::SCRIPT);
     }
 
     /**

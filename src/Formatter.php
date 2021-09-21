@@ -25,6 +25,7 @@ class Formatter
             'a', 'abbr', 'acronym', 'b', 'bdo', 'big', 'br', 'button', 'cite', 'code', 'dfn', 'em',
             'i', 'img', 'kbd', 'label', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'tt', 'var',
         ],
+        'keep_format' => ['script', 'pre', 'textarea'],
         'attribute_trim' => false,
         'attribute_cleanup' => false,
         'cdata_cleanup' => false,
@@ -79,8 +80,7 @@ class Formatter
         $cdataCleanup = $this->options['cdata_cleanup'] ?? false;
 
         return $html
-            ->remove('script', Pattern::SCRIPT)
-            ->remove('pre', Pattern::PRE)
+            ->removePreformats()
             ->when(!$attrCleanup, function ($html) {
                 $html->removeAttributes();
             })
@@ -99,8 +99,7 @@ class Formatter
             ->restoreInlines()
             ->restoreCdata()
             ->restoreAttributes()
-            ->restore('pre')
-            ->restore('script');
+            ->restorePreformats();
     }
 
     /**
@@ -118,8 +117,7 @@ class Formatter
         $html = new HtmlContent($input, $this->options);
 
         return $html
-            ->remove('script', Pattern::SCRIPT)
-            ->remove('pre', Pattern::PRE)
+            ->removePreformats()
             ->when(!$attrCleanup, function ($html) {
                 $html->removeAttributes();
             })
@@ -133,7 +131,6 @@ class Formatter
             ->when(!$cdataCleanup, function ($html) {
                 $html->restoreCdata();
             })
-            ->restore('pre')
-            ->restore('script');
+            ->restorePreformats();
     }
 }

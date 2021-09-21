@@ -6,12 +6,10 @@ abstract class Pattern
 {
     const MARKER = 'ᐃ';
 
-    // const ATTRIBUTE = '/(\S+)=["\']?((?:(?:.|\n)(?!["\']?\s+(?:\S+)=|[>"\']))+(?:.|\n))["\']?/mi';
-    const ATTRIBUTE = '/([a-z0-9_-]+)\s*=\s*(["\'])((?:.|\n)*?)\2/mi';
-    const SCRIPT = '/<script\b[^>]*>([\s\S]*?)<\/script>/mi';
-    const PRE = '/<pre\b[^>]*>([\s\S]*?)<\/pre>/mi';
-    const CDATA = '/<!\[CDATA\[(?:.|\n)*?\]\]>/mi';
+    const PRE    = '/<(%s)\b[^>]*>([\s\S]*?)<\/\1>/mi';
     const INLINE = '/<(%s)[^>]*>(?:[^<]*)<\/\1>/mi';
+    const ATTRIBUTE = '/([a-z0-9_-]+)\s*=\s*(["\'])((?:.|\n)*?)\2/mi';
+    const CDATA = '/<!\[CDATA\[(?:.|\n)*?\]\]>/mi';
     const WHITESPACE = '/(\s+)/mi';
 
     const IS_DOCTYPE = '/^<!([^>]*)>/';

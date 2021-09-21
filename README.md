@@ -46,6 +46,7 @@ $options = [
     'tab' => '    ',
     'empty_tags' => [],
     'inline_tags' => [],
+    'keep_format' => [],
     'attribute_trim' => true,
     'attribute_cleanup' => true,
     'cdata_cleanup' => true,
@@ -59,16 +60,19 @@ $output = $formatter->beautify($input);
 
 `Formatter` constructor accepts the following options that control indentation:
 
-| Name                | Data type | Default    | Description                                                                       |
-| :------------------ | :-------- | :--------- | :-------------------------------------------------------------------------------- |
-| `tab`               | string    | _4 spaces_ | Character(s) used for indentation. Defaults to 4 spaces.                          |
-| `empty_tags`        | array     | see below  | Here you can add more self-closing tags.                                          |
-| `inline_tags`       | array     | see below  | Here you can add more inline tags, or change any block tags and make them inline. |
-| `attribute_trim`    | boolean   | _false_    | Remove leading and trailing whitespace in the attribute values.                   |
-| `attribute_cleanup` | boolean   | _false_    | Replace all whitespaces with a single space in the attribute values.              |
-| `cdata_cleanup`     | boolean   | _false_    | Replace all whitespaces with a single space in CDATA.                             |
+| Name                | Data type | Default           | Description                                                                       |
+| :------------------ | :-------- | :---------------- | :-------------------------------------------------------------------------------- |
+| `tab`               | string    | _4 spaces_        | Character(s) used for indentation. Defaults to 4 spaces.                          |
+| `empty_tags`        | array     | [see below](#5-1) | Here you can add more self-closing tags.                                          |
+| `inline_tags`       | array     | [see below](#5-2) | Here you can add more inline tags, or change any block tags and make them inline. |
+| `keep_format`       | array     | [see below](#5-3) | Here you can add more tags to be exluded of formatting.                           |
+| `attribute_trim`    | boolean   | _false_           | Remove leading and trailing whitespace in the attribute values.                   |
+| `attribute_cleanup` | boolean   | _false_           | Replace all whitespaces with a single space in the attribute values.              |
+| `cdata_cleanup`     | boolean   | _false_           | Replace all whitespaces with a single space in CDATA.                             |
 
-### 5.1. Inline/block elements
+<a name='5-1'></a>
+
+### 5.1. Inline and block elements
 
 HTML elements are either "inline" elements or "block-level" elements.
 
@@ -106,6 +110,8 @@ $options = [
 $formatter->options($options);
 ```
 
+<a name='5-2'></a>
+
 ### 5.2. Self-closing (empty) elements
 
 An empty element is an element from HTML, SVG, or MathML that cannot have any child nodes (i.e., nested elements or text nodes).
@@ -128,6 +134,16 @@ $options = [
 ];
 $formatter = new Formatter($options);
 ```
+
+<a name='5-3'></a>
+
+### 5.3. Preformatted elements</a>
+
+Specific element will be not touched by the formatter. The built in preformatted elements are
+
+-   `script`, `pre`, `textarea`.
+
+You can exclude additional elements by adding them to the `keep_format` option.
 
 ## 6. Methods
 
@@ -181,4 +197,4 @@ As any recent repository, it could have several issues. Use it wisely.
 
 ## 8. Credits
 
-Thanks to **Gajus Kuizinas** for originally creating [gajus/dindent](https://github.com/gajus/dindent) and all the other developers who are tirelessly working on it. HTML Formatter was heavily influenced by Dindent.
+Thanks to **[Gajus Kuizinas](https://github.com/gajus)** for originally creating [gajus/dindent](https://github.com/gajus/dindent) and all the other developers who are tirelessly working on it. HTML Formatter was heavily influenced by Dindent.

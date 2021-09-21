@@ -1,0 +1,54 @@
+{
+    "name": "navindex/http-formatter",
+    "version": "0.1.0",
+    "type": "library",
+    "description": "HTML beautifier and minifier library for development and testing.",
+    "keywords": [
+        "navindex",
+        "HTML",
+        "indent",
+        "format",
+        "beautify",
+        "minify",
+        "PHP"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Miklos Karpati",
+            "email": "mk@navindex.com.au",
+            "homepage": "https://www.navindex.com.au",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.3|^8.0",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.3.3"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Navindex\\HtmlFormatter\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Navindex\\HtmlFormatter\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}

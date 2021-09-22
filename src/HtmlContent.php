@@ -33,7 +33,7 @@ class HtmlContent
     /**
      * Configuration settings.
      *
-     * @var array
+     * @var array <string, mixed>
      */
     protected $options = [];
 
@@ -59,7 +59,7 @@ class HtmlContent
     /**
      * Regex patterns and instructions.
      *
-     * @var array
+     * @var array <string, int>
      */
     protected $patterns = [];
 
@@ -73,8 +73,8 @@ class HtmlContent
     /**
      * Constructor.
      *
-     * @param string $content Text to be processed
-     * @param array  $options Configuration settings
+     * @param string                $content Text to be processed
+     * @param array <string, mixed> $options Configuration settings
      *
      * @return void
      */
@@ -184,7 +184,7 @@ class HtmlContent
         string $placeholder,
         string $pattern,
         callable $callback = null,
-        int $offset = 0
+        ?int $offset = 0
     ) {
         if (preg_match_all($pattern, $this->content, $matches)) {
             foreach ($matches[0] as $index => $part) {
@@ -340,6 +340,7 @@ class HtmlContent
 
         do {
             $pos = $nextPos;
+            $match = false;
 
             foreach ($this->patterns as $pattern => $rule) {
                 $match = preg_match($pattern, $subject, $matches);
@@ -376,7 +377,7 @@ class HtmlContent
     /**
      * Retrieves the log.
      *
-     * @return array
+     * @return array[]
      */
     public function getLog(): array
     {
@@ -392,7 +393,7 @@ class HtmlContent
      */
     public function useLog(?bool $useIt = true): self
     {
-        $this->useLog = $useIt ? new Logger() : null;
+        $this->logger = $useIt ? new Logger() : null;
 
         return $this;
     }

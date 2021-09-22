@@ -3,7 +3,6 @@
 namespace Navindex\HtmlFormatter;
 
 use Navindex\HtmlFormatter\HtmlContent;
-use Navindex\HtmlFormatter\Pattern;
 
 /**
  * Formatter class.
@@ -13,7 +12,7 @@ class Formatter
     /**
      * Configuration settings.
      *
-     * @var array
+     * @var array <string, mixed>
      */
     protected $options = [
         'tab'         => '    ',
@@ -34,7 +33,7 @@ class Formatter
     /**
      * Constructor.
      *
-     * @param array|null $options  Associative array of option names and values
+     * @param null|array <string, mixed> $options  Associative array of option names and values
      *
      * @return void
      */
@@ -48,7 +47,7 @@ class Formatter
     /**
      * Sets the formatter options.
      *
-     * @param array $options Associative array of option names and values
+     * @param array <string, mixed> $options Associative array of option names and values
      *
      * @return self
      */

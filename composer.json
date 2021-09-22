@@ -26,12 +26,9 @@
         "ext-mbstring": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.3.3"
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true
+        "larapack/dd": "^1.1",
+        "phpstan/phpstan": "^0.12.99",
+        "phpunit/phpunit": "^9.5"
     },
     "extra": {
         "laravel": {
@@ -49,6 +46,17 @@
         }
     },
     "scripts": {
+        "check": "phpstan analyse src tests --level 6",
         "test": "phpunit"
-    }
+    },
+    "scripts-descriptions": {
+        "check": "Run static analysis",
+        "test": "Run unit tests"
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/navindex"
+        }
+    ]
 }

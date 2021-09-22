@@ -10,14 +10,14 @@ class Logger
     /**
      * Log entries.
      *
-     * @var array
+     * @var array[]
      */
     protected $log = [];
 
     /**
      * Retrieves the log.
      *
-     * @return array
+     * @return array[]
      */
     public function get(): array
     {
@@ -52,7 +52,7 @@ class Logger
             'rule'    => $rule,
             'pattern' => $pattern,
             'subject' => $subject,
-            'match'   => $matches,
+            'matches' => $matches,
         ];
 
         return $this;

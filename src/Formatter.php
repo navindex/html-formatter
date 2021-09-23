@@ -18,7 +18,8 @@ class Formatter
         'tab'         => '    ',
         'empty_tags'  => [
             'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen',
-            'link', 'menuitem', 'meta', 'meta', 'param', 'path', 'source', 'track', 'use', 'wbr',
+            'link', 'menuitem', 'meta', 'meta', 'param', 'source', 'track', 'wbr',
+            'animate', 'stop', 'path', 'circle', 'line', 'polyline', 'rect', 'use',
         ],
         'inline_tags' => [
             'a', 'abbr', 'acronym', 'b', 'bdo', 'big', 'br', 'button', 'cite', 'code', 'dfn', 'em',

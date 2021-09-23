@@ -16,7 +16,7 @@ abstract class Pattern
     const IS_BLOCK = '/^(<([a-z]+)(?:[^>]*)>(?:[^<]*)<\/(?:\2)>)/';
     const IS_EMPTY_OPENING = '/^<(%s)([^>]*)>/';
     const IS_EMPTY_CLOSING = '/^<(.+)\/>/';
-    const IS_OPENING = '/^<[^\/]([^>]*)>/';
+    const IS_OPENING = '/^<[^\/](?:[^>]*)>/';
     const IS_CLOSING = '/^<\/([^>]*)>/';
     const IS_TEXT = '/^([^<ᐃ]+)/';
     const IS_WHITESPACE = '/^(\s+)/';

@@ -373,15 +373,16 @@ class HtmlContent
         $subject = $this->content;
         $output = '';
         $nextPos = 0;
+        $match = false;
 
         do {
             $pos = $nextPos;
-            $match = false;
 
             foreach ($this->patterns as $pattern => $action) {
-                $rule = $action['rule'];
                 $match = preg_match($pattern, $subject, $matches);
                 if (1 === $match) {
+                    $rule = $action['rule'];
+
                     if ($useLog) {
                         $this->logger->push($this->ruleDesc[$rule], $action['name'], $subject, $matches[0]);
                     }
@@ -400,7 +401,7 @@ class HtmlContent
                             break;
                     }
 
-                    $pos = $pos > 0 ? $pos : 0;
+                    $pos = $pos >= 0 ? $pos : 0;
                     $output .= str_repeat($tab, $pos) . $matches[0] . "\n";
                     $match = false;
                 }

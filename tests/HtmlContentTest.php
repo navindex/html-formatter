@@ -7,7 +7,6 @@ namespace Navindex\HtmlFormatter\Tests;
 use Iterator;
 use Navindex\HtmlFormatter\HtmlContent;
 use PHPUnit\Framework\TestCase;
-use SplSubject;
 
 /**
  * @covers \Navindex\HtmlFormatter\HtmlContent
@@ -362,7 +361,6 @@ final class HtmlContentTest extends TestCase
     public function testIndent(string $html, string $expected)
     {
         $hc = new HtmlContent($html, $this->options);
-
         $this->assertSame($expected, (string)$hc->indent());
     }
 
@@ -377,9 +375,7 @@ final class HtmlContentTest extends TestCase
     public function testIndentWithLog(string $html, array $expected)
     {
         $hc = new HtmlContent($html, $this->options);
-        $hc->useLog()->indent();
-        // dd($hc->getLog());
-        $this->assertSame($expected, $hc->getLog());
+        $this->assertSame($expected, $hc->useLog()->indent()->getLog());
     }
 
     /**
@@ -758,7 +754,7 @@ final class HtmlContentTest extends TestCase
                     <meta charset  ="utf-8  ">
                     <meta http-equiv=   "X-UA-Compatible" content="IE=edge">
                     <meta name="viewport" content=" width=device-width,    initial-scale=1,
-                        shrink-to-fit=no">
+                            shrink-to-fit=no">
                     <meta name="auth" content="1 "
                             id="auth">
                 </head>

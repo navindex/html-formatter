@@ -2,6 +2,7 @@
 
 namespace Navindex\HtmlFormatter;
 
+use Navindex\HtmlFormatter\Exceptions\IndenterException;
 use Navindex\HtmlFormatter\Helper;
 use Navindex\HtmlFormatter\Logger;
 use Navindex\HtmlFormatter\Pattern;
@@ -73,7 +74,7 @@ class HtmlContent
         ], [
             'pattern' => null,
             'rule'    => self::KEEP_INDENT,
-            'name'    => 'OPENING EMPTY TAG',
+            'name'    => 'EMPTY TAG',
         ], [
             'pattern' => Pattern::IS_MARKER,
             'rule'    => self::KEEP_INDENT,
@@ -86,10 +87,10 @@ class HtmlContent
             'pattern' => Pattern::IS_CLOSING,
             'rule'    => self::DECREASE_INDENT,
             'name'    => 'CLOSING TAG',
-        ], [
-            'pattern' => Pattern::IS_EMPTY_CLOSING,
-            'rule'    => self::DECREASE_INDENT,
-            'name'    => 'CLOSING EMPTY TAG',
+            ], [
+                'pattern' => Pattern::IS_EMPTY_CLOSING,
+                'rule'    => self::DECREASE_INDENT,
+                'name'    => 'CLOSING EMPTY TAG',
         ], [
             'pattern' => Pattern::IS_WHITESPACE,
             'rule'    => self::DISCARD,
@@ -367,10 +368,18 @@ class HtmlContent
         return $this;
     }
 
+    /**
+     * Content indenting.
+     *
+     * @throws \Navinde\Eceptions\IndenterException
+     *
+     * @return self
+     */
     public function indent(): self
     {
         $useLog = isset($this->logger);
         $tab = $this->options['tab'] ?? '';
+
         $subject = $this->content;
         $output = '';
         $match = false;
@@ -393,18 +402,22 @@ class HtmlContent
                             break 2;
                         case static::INCREASE_INDENT:
                             $output .= str_repeat($tab, $pos++) . $matches[0] . "\n";
-                            break;
+                            break 2;
                         case static::DECREASE_INDENT:
                             $pos = --$pos < 0 ? 0 : $pos;
                             $output .= str_repeat($tab, $pos) . $matches[0] . "\n";
-                            break;
+                            break 2;
                         default:
                             $output .= str_repeat($tab, $pos) . $matches[0] . "\n";
-                            break;
+                            break 2;
                     }
                 }
             }
         } while ($match);
+
+        if ('' !== $subject) {
+            throw new IndenterException('Unable to reproduce the original content.', $subject);
+        }
 
         $this->content = $output;
 

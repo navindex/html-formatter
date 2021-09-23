@@ -15,7 +15,7 @@ class HtmlContent
         KEEP_INDENT     = 0,
         DECREASE_INDENT = 1,
         INCREASE_INDENT = 2,
-        DISCARD_LINE    = 3;
+        DISCARD         = 3;
 
     const
         PRE       = 'pre',
@@ -45,11 +45,11 @@ class HtmlContent
     protected $parts = [];
 
     /**
-     * Rules for logging.
+     * Rule descriptions for logging.
      *
      * @var string[]
      */
-    protected $rules = [
+    protected $ruleDesc = [
         'KEEP INDENT',
         'DECREASE INDENT',
         'INCREASE INDENT',
@@ -59,9 +59,42 @@ class HtmlContent
     /**
      * Regex patterns and instructions.
      *
-     * @var array <string, int>
+     * @var array[]
      */
-    protected $patterns = [];
+    protected $patterns = [
+        Pattern::IS_BLOCK => [
+            'rule' => self::KEEP_INDENT,
+            'name' => 'BLOCK TAG',
+        ],
+        Pattern::IS_DOCTYPE => [
+            'rule' => self::KEEP_INDENT,
+            'name' => 'DOCTYPE',
+        ],
+        Pattern::IS_MARKER => [
+            'rule' => self::KEEP_INDENT,
+            'name' => 'MARKER',
+        ],
+        Pattern::IS_OPENING => [
+            'rule' => self::INCREASE_INDENT,
+            'name' => 'OPENING TAG',
+        ],
+        Pattern::IS_CLOSING => [
+            'rule' => self::DECREASE_INDENT,
+            'name' => 'CLOSING TAG',
+        ],
+        Pattern::IS_EMPTY_CLOSING => [
+            'rule' => self::DECREASE_INDENT,
+            'name' => 'CLOSING EMPTY TAG',
+        ],
+        Pattern::IS_WHITESPACE => [
+            'rule' => self::DISCARD,
+            'name' => 'WHITESPACE',
+        ],
+        Pattern::IS_TEXT => [
+            'rule' => self::KEEP_INDENT,
+            'name' => 'TEXT',
+        ],
+    ];
 
     /**
      * Logger instance.
@@ -92,18 +125,10 @@ class HtmlContent
      */
     protected function setPatterns()
     {
-        $emptyTags = $this->options['empty_tags'] ?? [];
-
-        $this->patterns = [
-            Pattern::IS_BLOCK => static::KEEP_INDENT, // block tag
-            Pattern::IS_DOCTYPE => static::KEEP_INDENT, // DOCTYPE
-            Pattern::IS_MARKER => static::KEEP_INDENT, // earlier replaced node
-            sprintf(Pattern::IS_EMPTY_OPENING, implode('|', $emptyTags)) => static::KEEP_INDENT, // tag with implied closing
-            Pattern::IS_OPENING => static::INCREASE_INDENT, // opening tag
-            Pattern::IS_CLOSING => static::DECREASE_INDENT, // closing tag
-            Pattern::IS_EMPTY_CLOSING => static::DECREASE_INDENT, // self-closing tag
-            Pattern::IS_WHITESPACE => static::DISCARD_LINE, // whitespace
-            Pattern::IS_TEXT => static::KEEP_INDENT, // text node
+        $pattern = sprintf(Pattern::IS_EMPTY_OPENING, implode('|', $this->options['empty_tags'] ?? []));
+        $this->patterns[$pattern] = [
+            'rule' => static::KEEP_INDENT,
+            'name' => 'CLOSING EMPTY TAG',
         ];
     }
 
@@ -188,7 +213,16 @@ class HtmlContent
     ) {
         if (preg_match_all($pattern, $this->content, $matches)) {
             foreach ($matches[0] as $index => $part) {
-                $this->content = str_replace($part, sprintf($placeholder, $index + $offset), $this->content);
+                // Replace the first occurrence only
+                $pos = strpos($this->content, $part);
+                if (false !== $pos) {
+                    $this->content = substr_replace(
+                        $this->content,
+                        sprintf($placeholder, $index + $offset),
+                        $pos,
+                        strlen($part)
+                    );
+                }
             }
             $matches = is_null($callback) ? $matches : $callback($matches);
             $this->parts[$type] = array_merge($this->parts[$type], $matches[0]);
@@ -214,18 +248,20 @@ class HtmlContent
      */
     public function removeAttributes(): self
     {
-        if ($this->options['attribute_trim'] ?? false) {
-            return $this->remove(static::ATTRIBUTE, Pattern::ATTRIBUTE, function (array $matches) {
-                foreach ($matches[0] as $index => &$value) {
+        return $this->remove(static::ATTRIBUTE, Pattern::ATTRIBUTE, function (array $matches) {
+            foreach ($matches[0] as $index => &$value) {
+                // Remove whitespace around the equal sign
+
+
+                // Trim attributes
+                if ($this->options['attribute_trim'] ?? false) {
                     $attrValue = trim($matches[3][$index]);
                     $value = str_replace($matches[3][$index], $attrValue, $value);
                 }
+            }
 
-                return $matches;
-            });
-        }
-
-        return $this->remove(static::ATTRIBUTE, Pattern::ATTRIBUTE);
+            return $matches;
+        });
     }
 
     /**
@@ -325,7 +361,7 @@ class HtmlContent
      */
     public function removeExtraWhitespace(): self
     {
-        $this->content = preg_replace('/(\s+)/', ' ', $this->content);
+        $this->content = preg_replace(Pattern::WHITESPACE, ' ', $this->content);
 
         return $this;
     }
@@ -342,27 +378,29 @@ class HtmlContent
             $pos = $nextPos;
             $match = false;
 
-            foreach ($this->patterns as $pattern => $rule) {
+            foreach ($this->patterns as $pattern => $action) {
+                $rule = $action['rule'];
                 $match = preg_match($pattern, $subject, $matches);
                 if (1 === $match) {
                     if ($useLog) {
-                        $this->logger->push($this->rules[$rule], $pattern, $subject, $matches[0]);
+                        $this->logger->push($this->ruleDesc[$rule], $action['name'], $subject, $matches[0]);
                     }
 
                     $subject = mb_substr($subject, mb_strlen($matches[0]));
 
                     switch ($rule) {
-                        case static::DISCARD_LINE:
+                        case static::DISCARD:
                             break 2;
                         case static::INCREASE_INDENT:
                             $nextPos++;
                             break;
                         case static::DECREASE_INDENT:
                             $nextPos--;
-                            $pos = $pos > 0 ? --$pos : 0;
+                            $pos--;
                             break;
                     }
 
+                    $pos = $pos > 0 ? $pos : 0;
                     $output .= str_repeat($tab, $pos) . $matches[0] . "\n";
                     $match = false;
                 }
@@ -377,11 +415,11 @@ class HtmlContent
     /**
      * Retrieves the log.
      *
-     * @return array[]
+     * @return null|array[]
      */
-    public function getLog(): array
+    public function getLog(): ?array
     {
-        return isset($this->logger) ? $this->logger->get() : [];
+        return isset($this->logger) ? $this->logger->get() : null;
     }
 
     /**

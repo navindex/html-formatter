@@ -103,7 +103,7 @@ final class LoggerTest extends TestCase
     /**
      * Data provider.
      *
-     * @return \Iterator <int, mixed>
+     * @return \Iterator <int, array<int, mixed>>
      */
     public function providerPushSingle(): Iterator
     {
@@ -132,7 +132,7 @@ final class LoggerTest extends TestCase
     /**
      * Data provider.
      *
-     * @return \Iterator <int, array>
+     * @return \Iterator <int, array[]>
      */
     public function providerPushMulti(): Iterator
     {

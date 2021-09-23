@@ -62,37 +62,42 @@ class HtmlContent
      * @var array[]
      */
     protected $patterns = [
-        Pattern::IS_BLOCK => [
-            'rule' => self::KEEP_INDENT,
-            'name' => 'BLOCK TAG',
-        ],
-        Pattern::IS_DOCTYPE => [
-            'rule' => self::KEEP_INDENT,
-            'name' => 'DOCTYPE',
-        ],
-        Pattern::IS_MARKER => [
-            'rule' => self::KEEP_INDENT,
-            'name' => 'MARKER',
-        ],
-        Pattern::IS_OPENING => [
-            'rule' => self::INCREASE_INDENT,
-            'name' => 'OPENING TAG',
-        ],
-        Pattern::IS_CLOSING => [
-            'rule' => self::DECREASE_INDENT,
-            'name' => 'CLOSING TAG',
-        ],
-        Pattern::IS_EMPTY_CLOSING => [
-            'rule' => self::DECREASE_INDENT,
-            'name' => 'CLOSING EMPTY TAG',
-        ],
-        Pattern::IS_WHITESPACE => [
-            'rule' => self::DISCARD,
-            'name' => 'WHITESPACE',
-        ],
-        Pattern::IS_TEXT => [
-            'rule' => self::KEEP_INDENT,
-            'name' => 'TEXT',
+        [
+            'pattern' => Pattern::IS_BLOCK,
+            'rule'    => self::KEEP_INDENT,
+            'name'    => 'BLOCK TAG',
+        ], [
+            'pattern' => Pattern::IS_DOCTYPE,
+            'rule'    => self::KEEP_INDENT,
+            'name'    => 'DOCTYPE',
+        ], [
+            'pattern' => null,
+            'rule'    => self::KEEP_INDENT,
+            'name'    => 'OPENING EMPTY TAG',
+        ], [
+            'pattern' => Pattern::IS_MARKER,
+            'rule'    => self::KEEP_INDENT,
+            'name'    => 'MARKER',
+        ], [
+            'pattern' => Pattern::IS_OPENING,
+            'rule'    => self::INCREASE_INDENT,
+            'name'    => 'OPENING TAG',
+        ], [
+            'pattern' => Pattern::IS_CLOSING,
+            'rule'    => self::DECREASE_INDENT,
+            'name'    => 'CLOSING TAG',
+        ], [
+            'pattern' => Pattern::IS_EMPTY_CLOSING,
+            'rule'    => self::DECREASE_INDENT,
+            'name'    => 'CLOSING EMPTY TAG',
+        ], [
+            'pattern' => Pattern::IS_WHITESPACE,
+            'rule'    => self::DISCARD,
+            'name'    => 'WHITESPACE',
+        ], [
+            'pattern' => Pattern::IS_TEXT,
+            'rule'    => self::KEEP_INDENT,
+            'name'    => 'TEXT',
         ],
     ];
 
@@ -125,11 +130,7 @@ class HtmlContent
      */
     protected function setPatterns()
     {
-        $pattern = sprintf(Pattern::IS_EMPTY_OPENING, implode('|', $this->options['empty_tags'] ?? []));
-        $this->patterns[$pattern] = [
-            'rule' => static::KEEP_INDENT,
-            'name' => 'CLOSING EMPTY TAG',
-        ];
+        $this->patterns[2]['pattern'] = sprintf(Pattern::IS_EMPTY_OPENING, implode('|', $this->options['empty_tags'] ?? []));
     }
 
     /**
@@ -372,14 +373,12 @@ class HtmlContent
         $tab = $this->options['tab'] ?? '';
         $subject = $this->content;
         $output = '';
-        $nextPos = 0;
         $match = false;
+        $pos = 0;
 
         do {
-            $pos = $nextPos;
-
-            foreach ($this->patterns as $pattern => $action) {
-                $match = preg_match($pattern, $subject, $matches);
+            foreach ($this->patterns as $action) {
+                $match = preg_match($action['pattern'], $subject, $matches);
                 if (1 === $match) {
                     $rule = $action['rule'];
 
@@ -393,17 +392,16 @@ class HtmlContent
                         case static::DISCARD:
                             break 2;
                         case static::INCREASE_INDENT:
-                            $nextPos++;
+                            $output .= str_repeat($tab, $pos++) . $matches[0] . "\n";
                             break;
                         case static::DECREASE_INDENT:
-                            $nextPos--;
-                            $pos--;
+                            $pos = --$pos < 0 ? 0 : $pos;
+                            $output .= str_repeat($tab, $pos) . $matches[0] . "\n";
+                            break;
+                        default:
+                            $output .= str_repeat($tab, $pos) . $matches[0] . "\n";
                             break;
                     }
-
-                    $pos = $pos >= 0 ? $pos : 0;
-                    $output .= str_repeat($tab, $pos) . $matches[0] . "\n";
-                    $match = false;
                 }
             }
         } while ($match);

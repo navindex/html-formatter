@@ -118,8 +118,8 @@ An empty element is an element from HTML, SVG, or MathML that cannot have any ch
 
 HTML Formatter identifies the following elements as "inline":
 
--   `area`, `base`, `br`, `col`, `command`, `embed`, `hr`, `img`, `input`, `keygen`,
--   `link`, `menuitem`, `meta`, `meta`, `param`, `path`, `source`, `track`, `use`, `wbr`,
+-   `area`, `base`, `br`, `col`, `command`, `embed`, `hr`, `img`, `input`,
+-   `keygen`, `link`, `menuitem`, `meta`, `param`, `source`, `track`, `wbr`,
 -   `animate`, `stop`, `path`, `circle`, `line`, `polyline`, `rect`, `use`
 
 This is a subset of the empty elements defined in the [MDN](https://developer.mozilla.org/en-US/docs/Glossary/empty_element).

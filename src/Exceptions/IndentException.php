@@ -4,7 +4,7 @@ namespace Navindex\HtmlFormatter\Exceptions;
 
 use RuntimeException;
 
-class IndenterException extends RuntimeException
+class IndentException extends RuntimeException
 {
     /**
      * Create a new exception instance.

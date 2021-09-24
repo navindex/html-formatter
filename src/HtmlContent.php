@@ -2,7 +2,7 @@
 
 namespace Navindex\HtmlFormatter;
 
-use Navindex\HtmlFormatter\Exceptions\IndenterException;
+use Navindex\HtmlFormatter\Exceptions\IndentException;
 use Navindex\HtmlFormatter\Helper;
 use Navindex\HtmlFormatter\Logger;
 use Navindex\HtmlFormatter\Pattern;
@@ -87,10 +87,10 @@ class HtmlContent
             'pattern' => Pattern::IS_CLOSING,
             'rule'    => self::DECREASE_INDENT,
             'name'    => 'CLOSING TAG',
-            ], [
-                'pattern' => Pattern::IS_EMPTY_CLOSING,
-                'rule'    => self::DECREASE_INDENT,
-                'name'    => 'CLOSING EMPTY TAG',
+        ], [
+            'pattern' => Pattern::IS_EMPTY_CLOSING,
+            'rule'    => self::DECREASE_INDENT,
+            'name'    => 'CLOSING EMPTY TAG',
         ], [
             'pattern' => Pattern::IS_WHITESPACE,
             'rule'    => self::DISCARD,
@@ -371,7 +371,7 @@ class HtmlContent
     /**
      * Content indenting.
      *
-     * @throws \Navinde\Eceptions\IndenterException
+     * @throws \Navindex\HtmlFormatter\Exceptions\HtmlFormatterException
      *
      * @return self
      */
@@ -416,7 +416,7 @@ class HtmlContent
         } while ($match);
 
         if ('' !== $subject) {
-            throw new IndenterException('Unable to reproduce the original content.', $subject);
+            throw new IndentException('Unable to create the indented content.', $subject);
         }
 
         $this->content = $output;

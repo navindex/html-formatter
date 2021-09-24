@@ -6,6 +6,7 @@ namespace Navindex\HtmlFormatter\Tests;
 
 use Iterator;
 use Navindex\HtmlFormatter\HtmlContent;
+use Navindex\HtmlFormatter\Exceptions\IndentException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -353,8 +354,8 @@ final class HtmlContentTest extends TestCase
     /**
      * @dataProvider providerIndent
      *
-     * @param string  $html
-     * @param string  $expected
+     * @param string $html
+     * @param string $expected
      *
      * @return void
      */
@@ -376,6 +377,35 @@ final class HtmlContentTest extends TestCase
     {
         $hc = new HtmlContent($html, $this->options);
         $this->assertSame($expected, $hc->useLog()->indent()->getLog());
+    }
+
+    /**
+     * @dataProvider providerIndent
+     *
+     * @param string $html
+     * @param string $output
+     *
+     * @return void
+     */
+    public function testIndentError(string $html, string $output)
+    {
+        $hc = new class($html, $this->options) extends HtmlContent
+        {
+            /**
+             * Indent wrapper.
+             *
+             * @return self
+             */
+            public function _indentCaller(): self
+            {
+                $this->patterns[7]['pattern'] = '/^[xxx]$/';
+                $this->patterns[8]['pattern'] = '/^[xxx]$/';
+                return $this->indent();
+            }
+        };
+
+        $this->expectException(IndentException::class);
+        $hc->_indentCaller();
     }
 
     /**

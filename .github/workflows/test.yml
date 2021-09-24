@@ -1,6 +1,4 @@
-# When a PR is opened or a push is made, perform
-# a static analysis check on the code using PHPStan.
-name: PHPStan
+name: PHPUnit
 
 on:
   push:
@@ -9,23 +7,27 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-    name: PHP ${{ matrix.php-versions }} Static Analysis
-    runs-on: ubuntu-latest
+  main:
+    name: PHP ${{ matrix.php-versions }} Unit Tests
+
     strategy:
-      fail-fast: false
       matrix:
-        php-versions: ["7.3", "7.4", "8.0"]
+        php-versions: ['7.3', '7.4', '8.0']
+
+    runs-on: ubuntu-latest
+
+    if: "!contains(github.event.head_commit.message, '[ci skip]')"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup PHP
+      - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          tools: composer, pecl, phpunit
-          extensions: intl, json, mbstring, gd, mysqlnd, xdebug, xml, sqlite3
+          tools: composer, phpunit
+          extensions: intl, json, mbstring, xml
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -33,25 +35,12 @@ jobs:
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
-      - name: Create composer cache directory
-        run: mkdir -p ${{ steps.composer-cache.outputs.dir }}
-
       - name: Cache composer dependencies
         uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
-
-      - name: Create PHPStan cache directory
-        run: mkdir -p build/phpstan
-
-      - name: Cache PHPStan results
-        uses: actions/cache@v2
-        with:
-          path: build/phpstan
-          key: ${{ runner.os }}-phpstan-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-phpstan-
 
       - name: Install dependencies (limited)
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name }}
@@ -63,5 +52,19 @@ jobs:
         env:
           COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
 
-      - name: Run static analysis
-        run: vendor/bin/phpstan analyze
+      - name: Enable Tachycardia
+        run: echo "TACHYCARDIA_MONITOR_GA=enabled" >> $GITHUB_ENV
+
+      - name: Test with PHPUnit
+        run: vendor/bin/phpunit --verbose --coverage-text
+
+  coveralls:
+    needs: [main]
+    name: Coveralls Finished
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload Coveralls results
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true

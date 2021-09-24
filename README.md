@@ -1,19 +1,11 @@
-# HTML Formatter
+# HTML Formatter [![Latest Version](https://img.shields.io/github/release/navindex/html-formatter?sort=semver&label=version)](https://raw.githubusercontent.com/navindex/html-formatter/master/CHANGELOG.md)
 
-<p align="center">
-
-[![Latest Version](https://img.shields.io/github/release/navindex/html-formatter?sort=semver&label=version)](https://raw.githubusercontent.com/navindex/html-formatter/master/CHANGELOG.md)
-[![Made With](https://img.shields.io/badge/made_with-php-blue)](/docs/requirements/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)
 [![PHP Composer](https://github.com/navindex/html-formatter/actions/workflows/php.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/php.yml)
-[![PHPStan](https://github.com/navindex/html-formatter/actions/workflows/phpstan.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/phpstan.yml)
+[![PHPUnit](https://github.com/navindex/html-formatter/actions/workflows/test.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/test.yml)
+[![PHPStan](https://github.com/navindex/html-formatter/actions/workflows/analyze.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/analyze.yml)
 [![Build Status](https://img.shields.io/travis/navindex/html-formatter?branch=master)](https://app.travis-ci.com/navindex/html-formatter)
 [![Coverage Status](https://coveralls.io/repos/github/navindex/html-formatter/badge.svg)](https://coveralls.io/github/navindex/html-formatter)
-
-</p>
-
-
-<!-- [![Quality Score](https://img.shields.io/scrutinizer/g/spatie/analytics-statistics.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/analytics-statistics) -->
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)
 
 ## 1. What Is It
 

@@ -1,6 +1,5 @@
 {
     "name": "navindex/html-formatter",
-    "version": "0.1.0",
     "type": "library",
     "description": "HTML beautifier and minifier library for development and testing.",
     "keywords": [

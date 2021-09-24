@@ -32,7 +32,7 @@ final class IndentExceptionTest extends TestCase
     /**
      * Data provider.
      *
-     * @return \Iterator <int, string[]>
+     * @return \Iterator <int, array <int, string|null>>
      */
     public function providerIndentExceptionMessage(): Iterator
     {

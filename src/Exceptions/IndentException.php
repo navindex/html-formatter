@@ -16,10 +16,10 @@ class IndentException extends RuntimeException
      */
     public function __construct(string $message, ?string $leftover = null)
     {
-        parent::__construct(
-            empty($leftover)
-                ? $message
-                : $message . " Extra content left at the end: {$leftover}"
-        );
+        $message = empty($leftover)
+            ? $message
+            : $message . " Extra content left at the end: {$leftover}";
+
+        parent::__construct($message);
     }
 }

@@ -3,7 +3,7 @@
 [![Unit tests](https://github.com/navindex/html-formatter/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/navindex/html-formatter/actions/workflows/test.yml)
 [![Code analysis](https://github.com/navindex/html-formatter/actions/workflows/analysis.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/analysis.yml)
 [![Build Status](https://img.shields.io/travis/navindex/html-formatter?branch=master)](https://app.travis-ci.com/navindex/html-formatter)
-[![Coverage Status](https://coveralls.io/repos/github/navindex/html-formatter/badge.svg)](https://coveralls.io/github/navindex/html-formatter)
+[![Coverage Status](https://coveralls.io/repos/github/navindex/html-formatter/badge.svg?branch=master)](https://coveralls.io/github/navindex/html-formatter?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)
 
 ## 1. What Is It

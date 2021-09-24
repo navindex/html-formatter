@@ -1,20 +1,19 @@
 # HTML Formatter
 
-[![PHP Composer](https://github.com/navindex/html-formatter/actions/workflows/php.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/php.yml)
- [![Build Status](https://app.travis-ci.com/navindex/html-formatter.svg?branch=master)](https://app.travis-ci.com/navindex/html-formatter)
- [![Coverage Status](https://coveralls.io/repos/github/navindex/html-formatter/badge.svg)](https://coveralls.io/github/navindex/html-formatter)
- [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
- 
-<!-- [![Build Status](https://travis-ci.org/gajus/html formatter.png?branch=master)](https://travis-ci.org/navindex/html-formatter)
-[![Coverage Status](https://coveralls.io/repos/gajus/html formatter/badge.png?branch=master)](https://coveralls.io/r/navindex/html-formatter?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/gajus/html formatter/version.png)](https://packagist.org/packages/navindex/html-formatter)
-[![License](https://poser.pugx.org/gajus/html formatter/license.png)](https://packagist.org/packages/navindex/html-formatter) -->
+<p align="center">
 
-<!-- [![Latest Version](https://img.shields.io/github/release/spatie/analytics-statistics.svg?style=flat-square)](https://github.com/spatie/analytics-statistics/releases)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/spatie/analytics-statistics/master.svg?style=flat-square)](https://travis-ci.org/spatie/analytics-statistics)
-[![Quality Score](https://img.shields.io/scrutinizer/g/spatie/analytics-statistics.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/analytics-statistics)
-[![Total Downloads](https://img.shields.io/packagist/dt/spatie/analytics-statistics.svg?style=flat-square)](https://packagist.org/packages/spatie/analytics-statistics) -->
+[![Latest Version](https://img.shields.io/github/release/navindex/html-formatter?sort=semver&label=version)](https://raw.githubusercontent.com/navindex/html-formatter/master/CHANGELOG.md)
+[![Made With](https://img.shields.io/badge/made_with-php-blue)](/docs/requirements/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)
+[![PHP Composer](https://github.com/navindex/html-formatter/actions/workflows/php.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/php.yml)
+[![PHPStan](https://github.com/navindex/html-formatter/actions/workflows/phpstan.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/phpstan.yml)
+[![Build Status](https://img.shields.io/travis/navindex/html-formatter?branch=master)](https://app.travis-ci.com/navindex/html-formatter)
+[![Coverage Status](https://coveralls.io/repos/github/navindex/html-formatter/badge.svg)](https://coveralls.io/github/navindex/html-formatter)
+
+</p>
+
+
+<!-- [![Quality Score](https://img.shields.io/scrutinizer/g/spatie/analytics-statistics.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/analytics-statistics) -->
 
 ## 1. What Is It
 
@@ -206,4 +205,5 @@ As any recent repository, it could have several issues. Use it wisely.
 Thanks to **[Gajus Kuizinas](https://github.com/gajus)** for originally creating [gajus/dindent](https://github.com/gajus/dindent) and all the other developers who are tirelessly working on it. HTML Formatter was heavily influenced by Dindent.
 
 ## 9. About Navindex
+
 Navindex is a web development agency in Melbourne, Australia. You'll find an overview of our cmpany [on our website](https://www.navindex.com.au).

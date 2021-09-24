@@ -296,45 +296,61 @@ final class HtmlContentTest extends TestCase
         $this->assertSame($expected, $hc->getCdataParts());
     }
 
-    // /**
-    //  * @dataProvider providerInlines
-    //  *
-    //  * @param string                   $html
-    //  * @param array <string, string[]> $options
-    //  * @param string                   $expected
-    //  *
-    //  * @return void
-    //  */
-    // public function testRemoveInlines(string $html, array $options, string $expected)
-    // {
-    //     $hc = new HtmlContent($html, $options);
-    //     $this->assertSame($expected, (string)$hc->removeInlines());
-    // }
+    /**
+     * @dataProvider providerInlines
+     *
+     * @param string   $html
+     * @param string[] $parts
+     * @param string   $expected
+     *
+     * @return void
+     */
+    public function testRemoveInlines(string $html, array $parts, string $expected)
+    {
+        $hc = new HtmlContent($html, $this->options);
+        $this->assertSame($expected, (string)$hc->removeInlines());
+    }
 
-    // /**
-    //  * @dataProvider providerInlines
-    //  *
-    //  * @param string                   $html
-    //  * @param array <string, string[]> $options
-    //  * @param array <int, string>      $expected
-    //  *
-    //  * @return void
-    //  */
-    // public function testInlineParts(string $html, array $options, array $expected)
-    // {
-    //     $hc = new class($html, $options) extends HtmlContent
-    //     {
-    //         /**
-    //          * @return null|array <int, string>
-    //          */
-    //         public function getInlineParts(): ?array
-    //         {
-    //             return $this->parts[static::PRE] ?? null;
-    //         }
-    //     };
-    //     $hc->removeInlines();
-    //     $this->assertSame($expected, $hc->getInlineParts());
-    // }
+    /**
+     * @dataProvider providerInlines
+     *
+     * @param string   $html
+     * @param string[] $parts
+     * @param string   $htmlReplaced
+     *
+     * @return void
+     */
+    public function testRestoreInlines(string $html, array $parts, string $htmlReplaced)
+    {
+        $hc = new HtmlContent($html, $this->options);
+        $hc->removeInlines()->restoreInlines();
+        $this->assertSame($html, (string)$hc);
+    }
+
+    /**
+     * @dataProvider providerInlines
+     *
+     * @param string   $html
+     * @param string[] $expected
+     * @param string   $htmlReplaced
+     *
+     * @return void
+     */
+    public function testInlineParts(string $html, array $expected, string $htmlReplaced)
+    {
+        $hc = new class($html, $this->options) extends HtmlContent
+        {
+            /**
+             * @return null|array <int, string>
+             */
+            public function _getInlineParts(): ?array
+            {
+                return $this->parts[static::INLINE] ?? null;
+            }
+        };
+        $hc->removeInlines();
+        $this->assertSame($expected, $hc->_getInlineParts());
+    }
 
     /**
      * @dataProvider providerWhitespace
@@ -394,9 +410,9 @@ final class HtmlContentTest extends TestCase
             /**
              * Indent wrapper.
              *
-             * @return self
+             * @return \Navindex\HtmlFormatter\HtmlContent
              */
-            public function _indentCaller(): self
+            public function _indentCaller(): HtmlContent
             {
                 $this->patterns[7]['pattern'] = '/^[xxx]$/';
                 $this->patterns[8]['pattern'] = '/^[xxx]$/';
@@ -682,6 +698,43 @@ final class HtmlContentTest extends TestCase
                     <path d="m33.8616 20.472v-19.8613h4.264v16.56h8.6107v3.3013z" />
                 </g>
             </svg>
+            OUTPUT,
+        ];
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return \Iterator <int, array <int, string|array>>
+     */
+    public function providerInlines(): Iterator
+    {
+        yield [
+            <<<INPUT
+            <body>
+                <a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>
+                <br><br />
+                <span>This is <strong>bold</strong>.</span>
+                <button data-anibutton-label="Deleting..." data-action="click->anibutton#confirm" data-anibutton-confirm="Are you sure you want to delete this product?">
+                    Delete
+                </button>
+            </body>
+            INPUT,
+            [
+                '<a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>',
+                '<strong>bold</strong>',
+                '<button data-anibutton-label="Deleting..." data-action="click->anibutton#confirm" ' .
+                'data-anibutton-confirm="Are you sure you want to delete this product?">' .
+                "\n        Delete\n    </button>",
+                '<span>This is ᐃinline:1:inlineᐃ.</span>'
+            ],
+            <<<OUTPUT
+            <body>
+                ᐃinline:0:inlineᐃ
+                <br><br />
+                ᐃinline:3:inlineᐃ
+                ᐃinline:2:inlineᐃ
+            </body>
             OUTPUT,
         ];
     }

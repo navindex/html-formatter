@@ -120,7 +120,10 @@ class HtmlContent
     public function __construct(string $content, array $options)
     {
         $this->content = $content;
+
         $this->options = $options;
+        $this->options['tab'] = $this->options['tab'] ?? '';
+
         $this->setPatterns();
     }
 
@@ -371,14 +374,13 @@ class HtmlContent
     /**
      * Content indenting.
      *
-     * @throws \Navindex\HtmlFormatter\Exceptions\HtmlFormatterException
+     * @throws \Navindex\HtmlFormatter\Exceptions\IndentException
      *
      * @return self
      */
     public function indent(): self
     {
         $useLog = isset($this->logger);
-        $tab = $this->options['tab'] ?? '';
 
         $subject = $this->content;
         $output = '';
@@ -396,21 +398,9 @@ class HtmlContent
                     }
 
                     $subject = mb_substr($subject, mb_strlen($matches[0]));
+                    $output .= $this->indentAction($pos, $rule, $matches[0]);
 
-                    switch ($rule) {
-                        case static::DISCARD:
-                            break 2;
-                        case static::INCREASE_INDENT:
-                            $output .= str_repeat($tab, $pos++) . $matches[0] . "\n";
-                            break 2;
-                        case static::DECREASE_INDENT:
-                            $pos = --$pos < 0 ? 0 : $pos;
-                            $output .= str_repeat($tab, $pos) . $matches[0] . "\n";
-                            break 2;
-                        default:
-                            $output .= str_repeat($tab, $pos) . $matches[0] . "\n";
-                            break 2;
-                    }
+                    break;
                 }
             }
         } while ($match);
@@ -422,6 +412,39 @@ class HtmlContent
         $this->content = $output;
 
         return $this;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param integer $position
+     * @param integer $rule
+     * @param string  $match
+     *
+     * @return string
+     */
+    protected function indentAction(int &$position, int $rule, string $match): string
+    {
+        if(static::DISCARD === $rule) {
+            return '';
+        }
+
+        $tab = $this->options['tab'];
+
+        switch ($rule) {
+            case static::INCREASE_INDENT:
+                $output = str_repeat($tab, $position++) . $match . "\n";
+                break;
+            case static::DECREASE_INDENT:
+                $position = --$position < 0 ? 0 : $position;
+                $output = str_repeat($tab, $position) . $match . "\n";
+                break;
+            default:
+                $output = str_repeat($tab, $position) . $match . "\n";
+                break;
+        }
+
+        return $output;
     }
 
     /**

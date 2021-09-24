@@ -2,13 +2,14 @@
     "name": "navindex/html-formatter",
     "type": "library",
     "description": "HTML beautifier and minifier library for development and testing.",
+    "homepage": "https://github.com/navindex/html-formatter",
     "keywords": [
-        "navindex",
+        "beautify",
+        "format",
         "HTML",
         "indent",
-        "format",
-        "beautify",
         "minify",
+        "Navindex",
         "PHP"
     ],
     "license": "MIT",

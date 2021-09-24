@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \Navindex\HtmlFormatter\Exceptions\IndentException
  */
-final class FormatterExceptionTest extends TestCase
+final class IndentExceptionTest extends TestCase
 {
     /**
      * @dataProvider providerIndentExceptionMessage

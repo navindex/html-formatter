@@ -52,14 +52,14 @@ jobs:
         env:
           COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
 
-      - name: Enable Tachycardia
-        run: echo "TACHYCARDIA_MONITOR_GA=enabled" >> $GITHUB_ENV
+      # - name: Enable Tachycardia
+      #   run: echo "TACHYCARDIA_MONITOR_GA=enabled" >> $GITHUB_ENV
 
       - name: Test with PHPUnit
         run: vendor/bin/phpunit --verbose --coverage-text
 
   coveralls:
-    needs: [ master ]
+    needs: [main]
     name: Coveralls Finished
     runs-on: ubuntu-latest
     steps:

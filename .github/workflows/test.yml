@@ -59,7 +59,7 @@ jobs:
         run: vendor/bin/phpunit --verbose --coverage-text
 
   coveralls:
-    needs: [main]
+    needs: [ master ]
     name: Coveralls Finished
     runs-on: ubuntu-latest
     steps:

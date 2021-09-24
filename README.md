@@ -1,6 +1,8 @@
 # HTML Formatter
 
 [![PHP Composer](https://github.com/navindex/html-formatter/actions/workflows/php.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/php.yml)
+ [![Build Status](https://app.travis-ci.com/navindex/html-formatter.svg?branch=master)](https://app.travis-ci.com/navindex/html-formatter)
+ [![Coverage Status](https://coveralls.io/repos/github/navindex/html-formatter/badge.svg)](https://coveralls.io/github/navindex/html-formatter)
  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
  
 <!-- [![Build Status](https://travis-ci.org/gajus/html formatter.png?branch=master)](https://travis-ci.org/navindex/html-formatter)

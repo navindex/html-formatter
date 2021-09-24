@@ -1,5 +1,8 @@
 # HTML Formatter
 
+[![PHP Composer](https://github.com/navindex/html-formatter/actions/workflows/php.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/php.yml)
+ [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+ 
 <!-- [![Build Status](https://travis-ci.org/gajus/html formatter.png?branch=master)](https://travis-ci.org/navindex/html-formatter)
 [![Coverage Status](https://coveralls.io/repos/gajus/html formatter/badge.png?branch=master)](https://coveralls.io/r/navindex/html-formatter?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/gajus/html formatter/version.png)](https://packagist.org/packages/navindex/html-formatter)

@@ -45,7 +45,7 @@
         }
     },
     "scripts": {
-        "check": "phpstan analyse src tests --level 6",
+        "check": "phpstan analyse",
         "test": "phpunit"
     },
     "scripts-descriptions": {

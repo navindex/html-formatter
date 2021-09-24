@@ -1,8 +1,7 @@
 # HTML Formatter [![Latest Version](https://img.shields.io/github/release/navindex/html-formatter?sort=semver&label=version)](https://raw.githubusercontent.com/navindex/html-formatter/master/CHANGELOG.md)
 
-[![tests](https://github.com/navindex/html-formatter/actions/workflows/test.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/test.yml)
-[![PHPUnit](https://github.com/navindex/html-formatter/actions/workflows/test2.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/test2.yml)
-[![PHPStan](https://github.com/navindex/html-formatter/actions/workflows/analyze.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/analyze.yml)
+[![Unit tests](https://github.com/navindex/html-formatter/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/navindex/html-formatter/actions/workflows/test.yml)
+[![Code analysis](https://github.com/navindex/html-formatter/actions/workflows/analysis.yml/badge.svg)](https://github.com/navindex/html-formatter/actions/workflows/analysis.yml)
 [![Build Status](https://img.shields.io/travis/navindex/html-formatter?branch=master)](https://app.travis-ci.com/navindex/html-formatter)
 [![Coverage Status](https://coveralls.io/repos/github/navindex/html-formatter/badge.svg)](https://coveralls.io/github/navindex/html-formatter)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)

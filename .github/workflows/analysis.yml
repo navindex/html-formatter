@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: PHP ${{ matrix.php-versions }} Unit Tests
+    name: PHP ${{ matrix.php-versions }} Static Analysis
 
     strategy:
       matrix:
@@ -24,7 +24,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          tools: composer, phpunit
+          tools: composer, phpstan
           extensions: intl, json, mbstring, xml
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}

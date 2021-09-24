@@ -47,6 +47,22 @@ jobs:
       - name: Run test suite
         run: composer run-script test
 
-      - name: Code coverage badge
-        uses: timkrase/phpunit-coverage-badge@v1.2.0
+      - if: matrix.php-versions == '8.0'
+        name: Run Coveralls
+        run: vendor/bin/php-coveralls --verbose --coverage_clover=build/phpunit/clover.xml --json_path build/phpunit/coveralls-upload.json
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_PARALLEL: true
+          COVERALLS_FLAG_NAME: PHP ${{ matrix.php-versions }}
+
+  coveralls:
+    needs: [build]
+    name: Coveralls Finished
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload Coveralls results
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
 

@@ -8,3 +8,7 @@ php:
 script:
   - composer run test
   - composer run check
+
+before_script:
+  - travis_retry composer self-update
+  - travis_retry composer clear-cache

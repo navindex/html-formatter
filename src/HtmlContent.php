@@ -29,7 +29,7 @@ class HtmlContent
      *
      * @var string
      */
-    protected $content;
+    protected $content = '';
 
     /**
      * Configuration settings.
@@ -105,7 +105,7 @@ class HtmlContent
     /**
      * Logger instance.
      *
-     * @var \Navindex\HtmlFormatter\Logger
+     * @var \Navindex\HtmlFormatter\Logger|null
      */
     protected $logger;
 
@@ -366,7 +366,7 @@ class HtmlContent
      */
     public function removeExtraWhitespace(): self
     {
-        $this->content = preg_replace(Pattern::WHITESPACE, ' ', $this->content);
+        $this->content = preg_replace(Pattern::WHITESPACE, ' ', $this->content) ?? $this->content;
 
         return $this;
     }
@@ -380,8 +380,6 @@ class HtmlContent
      */
     public function indent(): self
     {
-        $useLog = isset($this->logger);
-
         $subject = $this->content;
         $output = '';
         $match = false;
@@ -393,7 +391,7 @@ class HtmlContent
                 if (1 === $match) {
                     $rule = $action['rule'];
 
-                    if ($useLog) {
+                    if ($this->logger) {
                         $this->logger->push($this->ruleDesc[$rule], $action['name'], $subject, $matches[0]);
                     }
 
@@ -454,7 +452,7 @@ class HtmlContent
      */
     public function getLog(): ?array
     {
-        return isset($this->logger) ? $this->logger->get() : null;
+        return $this->logger ? $this->logger->get() : null;
     }
 
     /**

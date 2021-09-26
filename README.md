@@ -37,17 +37,7 @@ composer require navindex/html-formatter
 use Navindex\HTMLFormatter\Formatter;
 
 $input = 'This is your HTML code.';
-$options = [
-    'tab' => '    ',
-    'empty_tags' => [],
-    'inline_tags' => [],
-    'keep_format' => [],
-    'attribute_trim' => true,
-    'attribute_cleanup' => true,
-    'cdata_cleanup' => true,
-];
-
-$formatter = new Formatter($options);
+$formatter = new Formatter();
 $output = $formatter->beautify($input);
 ```
 

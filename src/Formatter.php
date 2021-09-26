@@ -48,22 +48,21 @@ class Formatter
      */
     public function __construct(?array $config = null)
     {
-        $this->config = new Config($this->options);
-        if (is_array($config)) {
-            $this->config->merge($config);
-        }
+        $this->config = new Config($config ?? $this->options);
     }
 
     /**
      * Sets the formatter options.
      *
-     * @param array <string, mixed> $options Associative array of option names and values
+     * @param \Navindex\SimpleConfig\Config|mixed[] $config Associative array of option names and values
      *
      * @return self
      */
-    public function setConfig(Config $config): self
+    public function setConfig($config): self
     {
-        $this->config = $config;
+        $this->config = $config instanceof Config
+            ? $config
+            : new Config($config);
 
         return $this;
     }
@@ -71,13 +70,21 @@ class Formatter
     /**
      * Gets the formatter options.
      *
-     * @param array <string, mixed> $options Associative array of option names and values
-     *
-     * @return self
+     * @return null|\Navindex\SimpleConfig\Config
      */
-    public function getConfig(): Config
+    public function getConfig(): ?Config
     {
         return $this->config;
+    }
+
+    /**
+     * Gets the formatter options.
+     *
+     * @return mixed[]
+     */
+    public function getConfigArray(): array
+    {
+        return $this->config->toArray();
     }
 
     /**

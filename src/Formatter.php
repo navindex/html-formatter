@@ -15,7 +15,7 @@ class Formatter
      *
      * @var array <string, mixed>
      */
-    protected $options = [
+    protected $defaultConfig = [
         'tab'         => '    ',
         'empty_tags'  => [
             'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input',
@@ -27,7 +27,7 @@ class Formatter
             'i', 'img', 'kbd', 'label', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'tt', 'var',
         ],
         'keep_format' => ['script', 'pre', 'textarea'],
-        'attribute_trim' => false,
+        'attribute_trim' => true,
         'attribute_cleanup' => false,
         'cdata_cleanup' => false,
     ];
@@ -42,17 +42,17 @@ class Formatter
     /**
      * Constructor.
      *
-     * @param null|array <string, mixed> $config Associative array of option names and values
+     * @param null|mixed[] $config Associative array of option names and values
      *
      * @return void
      */
     public function __construct(?array $config = null)
     {
-        $this->config = new Config($config ?? $this->options);
+        $this->config = new Config($config ?? $this->defaultConfig);
     }
 
     /**
-     * Sets the formatter options.
+     * Sets the formatter config.
      *
      * @param \Navindex\SimpleConfig\Config|mixed[] $config Associative array of option names and values
      *
@@ -60,7 +60,7 @@ class Formatter
      */
     public function setConfig($config): self
     {
-        $this->config = $config instanceof Config
+        $this->config = ($config instanceof Config)
             ? $config
             : new Config($config);
 
@@ -68,17 +68,17 @@ class Formatter
     }
 
     /**
-     * Gets the formatter options.
+     * Gets the formatter config.
      *
-     * @return null|\Navindex\SimpleConfig\Config
+     * @return \Navindex\SimpleConfig\Config
      */
-    public function getConfig(): ?Config
+    public function getConfig(): Config
     {
         return $this->config;
     }
 
     /**
-     * Gets the formatter options.
+     * Gets the formatter config.
      *
      * @return mixed[]
      */
@@ -96,9 +96,10 @@ class Formatter
      */
     public function beautify(string $input): string
     {
+        $attrCleanup = $this->config->get('attribute_cleanup', false);
+        $cdataCleanup = $this->config->get('cdata_cleanup', false);
+
         $html = new HtmlContent($input, $this->config);
-        $attrCleanup = $this->options['attribute_cleanup'] ?? false;
-        $cdataCleanup = $this->options['cdata_cleanup'] ?? false;
 
         return $html
             ->removePreformats()
@@ -132,8 +133,8 @@ class Formatter
      */
     public function minify(string $input): string
     {
-        $attrCleanup = $this->options['attribute_cleanup'] ?? false;
-        $cdataCleanup = $this->options['cdata_cleanup'] ?? false;
+        $attrCleanup = $this->config->get('attribute_cleanup', false);
+        $cdataCleanup = $this->config->get('cdata_cleanup', false);
 
         $html = new HtmlContent($input, $this->config);
 

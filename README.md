@@ -193,7 +193,7 @@ As any recent repository, it could have several issues. Use it wisely.
 
 ## 8. Credits
 
-Thanks to **[Gajus Kuizinas](https://github.com/gajus)** for originally creating [gajus/dindent](https://github.com/gajus/dindent) and all the other developers who are tirelessly working on it. HTML Formatter was heavily influenced by Dindent.
+Thanks to **[Gajus Kuizinas](https://github.com/gajus)** for originally creating [gajus/dindent](https://github.com/gajus/dindent) and all the other developers who are tirelessly working on it. HTML Formatter was inspired by Dindent.
 
 ## 9. About Navindex
 

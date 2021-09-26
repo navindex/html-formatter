@@ -42,6 +42,32 @@ final class HelperTest extends TestCase
     }
 
     /**
+     * @dataProvider providerWrap
+     *
+     * @param null|mixed $var
+     * @param mixed[]    $expected
+     *
+     * @return void
+     */
+    public function testWrap($array, array $expected)
+    {
+        $this->assertSame($expected, Helper::wrap($array));
+    }
+
+    /**
+     * @dataProvider providerIsAssoc
+     *
+     * @param mixed[] $array
+     * @param bool    $expected
+     *
+     * @return void
+     */
+    public function testIsAssoc(array $array, bool $expected)
+    {
+        $this->assertSame($expected, Helper::isAssoc($array));
+    }
+
+    /**
      * Data provider.
      *
      * @return \Iterator <int, array <int, string>>
@@ -73,5 +99,40 @@ final class HelperTest extends TestCase
         yield ['-1', '-2', '-1-2'];
         yield ['123', '456', '123456'];
         yield ['123456', '456', '123456'];
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return \Iterator <int, array <int, mixed>>
+     */
+    public function providerWrap(): Iterator
+    {
+        yield [null, []];
+        yield [[], []];
+        yield ['this is a string', ['this is a string']];
+        yield [['this is a string'], ['this is a string']];
+        yield [42, [42]];
+        yield [[42], [42]];
+        yield [['aaa' => ['bbb' => ['ccc' => 'value']]], ['aaa' => ['bbb' => ['ccc' => 'value']]]];
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return \Iterator <int, array <int, mixed[]|bool>>
+     */
+    public function providerIsAssoc(): Iterator
+    {
+        yield [[], false];
+        yield [[0,1,2,3], false];
+        yield [[1,2,3,4], false];
+        yield [[2,3,4,6], false];
+        yield [['aaa' => 'bbb'], true];
+        yield [['xxx' => 'aaa', 'yyy' => 'aaa', 'zzz' => 'aaa'], true];
+        yield [[0 => 'aaa', 1 => 'aaa', 2 => 'aaa'], false];
+        yield [[0 => 'aaa', 1 => 'aaa', 3 => 'aaa'], false];
+        yield [['0' => 'aaa', '1' => 'aaa', '2' => 'aaa'], false];
+        yield [['0' => 'aaa', '1' => 'aaa', '3' => 'aaa'], false];
     }
 }

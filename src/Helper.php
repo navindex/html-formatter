@@ -34,4 +34,35 @@ abstract class Helper
 
         return preg_replace('/(?:' . $quoted . ')+$/u', '', $value) . $cap;
     }
+
+    /**
+     * Test if array is an associative array
+     *
+     * Note that this function will return false if an array is empty. Meaning
+     * empty arrays will be treated as if they are not associative arrays.
+     *
+     * @param mixed[] $array
+     *
+     * @return bool
+     */
+    public static function isAssoc(array $array): bool
+    {
+        return 0 < count($array) && count(array_filter(array_keys($array), 'is_string')) == count($array);
+    }
+
+    /**
+     * If the given value is not an array, wrap it in one.
+     *
+     * @param mixed $value
+     *
+     * @return array
+     */
+    public static function wrap($value)
+    {
+        if (is_null($value)) {
+            return [];
+        }
+
+        return is_array($value) ? $value : [$value];
+    }
 }

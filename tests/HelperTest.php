@@ -49,9 +49,9 @@ final class HelperTest extends TestCase
      *
      * @return void
      */
-    public function testWrap($array, array $expected)
+    public function testWrap($var, array $expected)
     {
-        $this->assertSame($expected, Helper::wrap($array));
+        $this->assertSame($expected, Helper::wrap($var));
     }
 
     /**

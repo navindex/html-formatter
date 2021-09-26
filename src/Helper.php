@@ -55,7 +55,7 @@ abstract class Helper
      *
      * @param mixed $value
      *
-     * @return array
+     * @return mixed[]
      */
     public static function wrap($value)
     {

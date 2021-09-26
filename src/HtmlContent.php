@@ -113,14 +113,14 @@ class HtmlContent
     /**
      * Constructor.
      *
-     * @param string                $content Text to be processed
-     * @param array <string, mixed> $config  Configuration settings
+     * @param null|string                   $content Text to be processed
+     * @param \Navindex\SimpleConfig\Config $config  Configuration settings
      *
      * @return void
      */
-    public function __construct(string $content, Config $config)
+    public function __construct(?string $content, Config $config)
     {
-        $this->content = $content;
+        $this->content = $content ?? '';
         $this->config = $config;
         $this->setPatterns();
     }

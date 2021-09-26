@@ -5,26 +5,27 @@ declare(strict_types=1);
 namespace Navindex\HtmlFormatter\Tests;
 
 use Iterator;
-use Navindex\HtmlFormatter\HtmlContent;
 use Navindex\HtmlFormatter\Exceptions\IndentException;
+use Navindex\HtmlFormatter\HtmlContent;
+use Navindex\SimpleConfig\Config;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Navindex\HtmlFormatter\HtmlContent
- * @uses \Navindex\HtmlFormatter\Pattern
  */
 final class HtmlContentTest extends TestCase
 {
     /**
-     * Default options to use.
+     * Default config to use.
      *
      * @var array <string, mixed>
      */
-    protected $options = [
+    protected $config = [
         'tab'         => '    ',
         'empty_tags'  => [
-            'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen',
-            'link', 'menuitem', 'meta', 'meta', 'param', 'path', 'source', 'track', 'use', 'wbr',
+            'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input',
+            'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr',
+            'animate', 'stop', 'path', 'circle', 'line', 'polyline', 'rect', 'use',
         ],
         'inline_tags' => [
             'a', 'abbr', 'acronym', 'b', 'bdo', 'big', 'br', 'button', 'cite', 'code', 'dfn', 'em',
@@ -45,27 +46,27 @@ final class HtmlContentTest extends TestCase
      */
     public function testConstructorContent(string $html)
     {
-        $hc = new HtmlContent($html, $this->options);
+        $hc = new HtmlContent($html, new Config($this->config));
         $this->assertSame($html, $hc->get());
     }
 
     /**
      * @return void
      */
-    public function testConstructorOptions()
+    public function testConstructorConfig()
     {
-        $hc = new class('some content', $this->options) extends HtmlContent
+        $hc = new class('some content', new Config($this->config)) extends HtmlContent
         {
             /**
              * @return null|array <string, mixed>
              */
-            public function _getOptions(): ?array
+            public function _getConfig(): ?array
             {
-                return $this->options ?? null;
+                return $this->config->toArray();
             }
         };
 
-        $this->assertSame($this->options, $hc->_getOptions());
+        $this->assertSame($this->config, $hc->_getConfig());
     }
 
     /**
@@ -77,7 +78,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testContentToString(string $html)
     {
-        $hc = new HtmlContent($html, $this->options);
+        $hc = new HtmlContent($html, new Config($this->config));
         $this->assertSame($html, (string)$hc);
     }
 
@@ -86,7 +87,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testUseLog()
     {
-        $hc = new HtmlContent('some content', $this->options);
+        $hc = new HtmlContent('some content', new Config($this->config));
         $this->assertIsArray($hc->useLog(true)->getLog());
     }
 
@@ -95,7 +96,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testUseLogNoAttribute()
     {
-        $hc = new HtmlContent('some content', $this->options);
+        $hc = new HtmlContent('some content', new Config($this->config));
         $this->assertIsArray($hc->useLog()->getLog());
     }
 
@@ -104,7 +105,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testDoNotUseLog()
     {
-        $hc = new HtmlContent('some content', $this->options);
+        $hc = new HtmlContent('some content', new Config($this->config));
         $this->assertNull($hc->useLog(false)->getLog());
     }
 
@@ -112,15 +113,15 @@ final class HtmlContentTest extends TestCase
      * @dataProvider providerPreformats
      *
      * @param string                   $html
-     * @param array <string, string[]> $options
+     * @param array <string, string[]> $config
      * @param string[]                 $parts
      * @param string                   $expected
      *
      * @return void
      */
-    public function testRemovePreformats(string $html, array $options, array $parts, string $expected)
+    public function testRemovePreformats(string $html, array $config, array $parts, string $expected)
     {
-        $hc = new HtmlContent($html, $options);
+        $hc = new HtmlContent($html, new Config($config));
         $hc->removePreformats();
         $this->assertSame($expected, (string)$hc);
     }
@@ -129,15 +130,15 @@ final class HtmlContentTest extends TestCase
      * @dataProvider providerPreformats
      *
      * @param string                   $html
-     * @param array <string, string[]> $options
+     * @param array <string, string[]> $config
      * @param string[]                 $parts
      * @param string                   $htmlReplaced
      *
      * @return void
      */
-    public function testRestorePreformats(string $html, array $options, array $parts, string $htmlReplaced)
+    public function testRestorePreformats(string $html, array $config, array $parts, string $htmlReplaced)
     {
-        $hc = new HtmlContent($html, $options);
+        $hc = new HtmlContent($html, new Config($config));
         $hc->removePreformats()->restorePreformats();
         $this->assertSame($html, (string)$hc);
     }
@@ -146,15 +147,15 @@ final class HtmlContentTest extends TestCase
      * @dataProvider providerPreformats
      *
      * @param string                   $html
-     * @param array <string, string[]> $options
+     * @param array <string, string[]> $config
      * @param string[]                 $expected
      * @param string                   $htmlReplaced
      *
      * @return void
      */
-    public function testPreformatParts(string $html, array $options, array $expected, string $htmlReplaced)
+    public function testPreformatParts(string $html, array $config, array $expected, string $htmlReplaced)
     {
-        $hc = new class($html, $options) extends HtmlContent
+        $hc = new class($html, new Config($config)) extends HtmlContent
         {
             /**
              * @return null|array <int, string>
@@ -179,7 +180,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRemoveAttributes(string $html, array $parts, string $expected)
     {
-        $hc = new HtmlContent($html, []);
+        $hc = new HtmlContent($html, new Config());
         $this->assertSame($expected, (string)$hc->removeAttributes());
     }
 
@@ -194,7 +195,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRestoreAttributes(string $html, array $parts, string $htmlReplaced)
     {
-        $hc = new HtmlContent($html, []);
+        $hc = new HtmlContent($html, new Config());
         $hc->removeAttributes()->restoreAttributes();
         $this->assertSame($html, (string)$hc);
     }
@@ -210,7 +211,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testAttributeParts(string $html, array $expected, string $htmlReplaced)
     {
-        $hc = new class($html, []) extends HtmlContent
+        $hc = new class($html, new Config()) extends HtmlContent
         {
             /**
              * @return null|array <int, string>
@@ -225,17 +226,17 @@ final class HtmlContentTest extends TestCase
     }
 
     /**
-     * @dataProvider providerAttributeOptions
+     * @dataProvider providerAttributeConfig
      *
      * @param string                   $html
-     * @param array <string, string[]> $options
+     * @param array <string, string[]> $config
      * @param string                   $expected
      *
      * @return void
      */
-    public function testAttributeOptions(string $html, array $options, string $expected)
+    public function testAttributeConfig(string $html, array $config, string $expected)
     {
-        $hc = new HtmlContent($html, $options);
+        $hc = new HtmlContent($html, new Config($config));
         $hc->removeAttributes()->restoreAttributes();
         $this->assertSame($expected, (string)$hc);
     }
@@ -251,7 +252,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRemoveCdata(string $html, array $parts, string $expected)
     {
-        $hc = new HtmlContent($html, []);
+        $hc = new HtmlContent($html, new Config());
         $this->assertSame($expected, (string)$hc->removeCdata());
     }
 
@@ -266,7 +267,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRestoreCdata(string $html, array $parts, string $htmlReplaced)
     {
-        $hc = new HtmlContent($html, []);
+        $hc = new HtmlContent($html, new Config());
         $hc->removeCdata()->restoreCdata();
         $this->assertSame($html, (string)$hc);
     }
@@ -282,7 +283,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testCdataParts(string $html, array $expected, string $htmlReplaced)
     {
-        $hc = new class($html, []) extends HtmlContent
+        $hc = new class($html, new Config()) extends HtmlContent
         {
             /**
              * @return null|array <int, string>
@@ -307,7 +308,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRemoveInlines(string $html, array $parts, string $expected)
     {
-        $hc = new HtmlContent($html, $this->options);
+        $hc = new HtmlContent($html, new Config($this->config));
         $this->assertSame($expected, (string)$hc->removeInlines());
     }
 
@@ -322,7 +323,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRestoreInlines(string $html, array $parts, string $htmlReplaced)
     {
-        $hc = new HtmlContent($html, $this->options);
+        $hc = new HtmlContent($html, new Config($this->config));
         $hc->removeInlines()->restoreInlines();
         $this->assertSame($html, (string)$hc);
     }
@@ -338,7 +339,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testInlineParts(string $html, array $expected, string $htmlReplaced)
     {
-        $hc = new class($html, $this->options) extends HtmlContent
+        $hc = new class($html, new Config($this->config)) extends HtmlContent
         {
             /**
              * @return null|array <int, string>
@@ -362,7 +363,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRemoveExtraWhitespace(string $html, string $expected)
     {
-        $hc = new HtmlContent($html, []);
+        $hc = new HtmlContent($html, new Config());
 
         $this->assertSame($expected, (string)$hc->removeExtraWhitespace());
     }
@@ -377,7 +378,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testIndent(string $html, string $expected)
     {
-        $hc = new HtmlContent($html, $this->options);
+        $hc = new HtmlContent($html, new Config($this->config));
         $this->assertSame($expected, (string)$hc->indent());
     }
 
@@ -391,7 +392,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testIndentWithLog(string $html, array $expected)
     {
-        $hc = new HtmlContent($html, $this->options);
+        $hc = new HtmlContent($html, new Config($this->config));
         $this->assertSame($expected, $hc->useLog()->indent()->getLog());
     }
 
@@ -403,9 +404,9 @@ final class HtmlContentTest extends TestCase
      *
      * @return void
      */
-    public function testIndentError(string $html, string $output)
+    public function testIndentException(string $html, string $output)
     {
-        $hc = new class($html, $this->options) extends HtmlContent
+        $hc = new class($html, new Config($this->config)) extends HtmlContent
         {
             /**
              * Indent wrapper.
@@ -436,7 +437,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testWhen(bool $value, string $originalContent, string $newContent, string $expected)
     {
-        $hc = new class($originalContent, []) extends HtmlContent
+        $hc = new class($originalContent, new Config()) extends HtmlContent
         {
             /**
              * @param string $content
@@ -476,7 +477,7 @@ final class HtmlContentTest extends TestCase
      */
     public function providerPreformats(): Iterator
     {
-        $options = ['keep_format' => ['script', 'pre', 'textarea']];
+        $config = ['keep_format' => ['script', 'pre', 'textarea']];
 
         yield [
             <<<INPUT
@@ -500,7 +501,7 @@ final class HtmlContentTest extends TestCase
                         here too </textarea>
                 </body></html>
             INPUT,
-            $options,
+            $config,
             [
                 '<script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript"></script>',
                 '<script> Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement(\'style\'), rxEsc = /([.*+?^$()|\[\]\/\\])/g</script>',
@@ -629,7 +630,7 @@ final class HtmlContentTest extends TestCase
      *
      * @return \Iterator <int, array <int, string|array>>
      */
-    public function providerAttributeOptions(): Iterator
+    public function providerAttributeConfig(): Iterator
     {
         yield [
             <<<INPUT

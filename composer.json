@@ -23,18 +23,14 @@
     ],
     "require": {
         "php": "^7.3|^8.0",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "navindex/simple-config": "^0.1.0"
     },
     "require-dev": {
         "larapack/dd": "^1.1",
         "phpstan/phpstan": "^0.12.99",
         "phpunit/phpunit": "^9.5",
         "php-coveralls/php-coveralls": "^2.4"
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        }
     },
     "autoload": {
         "psr-4": {

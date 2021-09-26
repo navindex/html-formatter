@@ -6,6 +6,7 @@ use Navindex\HtmlFormatter\Exceptions\IndentException;
 use Navindex\HtmlFormatter\Helper;
 use Navindex\HtmlFormatter\Logger;
 use Navindex\HtmlFormatter\Pattern;
+use Navindex\SimpleConfig\Config;
 
 /**
  * HTML content.
@@ -23,27 +24,6 @@ class HtmlContent
         ATTRIBUTE = 'attr',
         CDATA     = 'cdata',
         INLINE    = 'inline';
-
-    /**
-     * HTML content.
-     *
-     * @var string
-     */
-    protected $content = '';
-
-    /**
-     * Configuration settings.
-     *
-     * @var array <string, mixed>
-     */
-    protected $options = [];
-
-    /**
-     * Temporary storage of content parts.
-     *
-     * @var array[]
-     */
-    protected $parts = [];
 
     /**
      * Rule descriptions for logging.
@@ -103,6 +83,27 @@ class HtmlContent
     ];
 
     /**
+     * HTML content.
+     *
+     * @var string
+     */
+    protected $content = '';
+
+    /**
+     * Temporary storage of content parts.
+     *
+     * @var array[]
+     */
+    protected $parts = [];
+
+    /**
+     * Configuration settings.
+     *
+     * @var \Navindex\SimpleConfig\Config
+     */
+    protected $config;
+
+    /**
      * Logger instance.
      *
      * @var \Navindex\HtmlFormatter\Logger|null
@@ -113,17 +114,14 @@ class HtmlContent
      * Constructor.
      *
      * @param string                $content Text to be processed
-     * @param array <string, mixed> $options Configuration settings
+     * @param array <string, mixed> $config  Configuration settings
      *
      * @return void
      */
-    public function __construct(string $content, array $options)
+    public function __construct(string $content, Config $config)
     {
         $this->content = $content;
-
-        $this->options = $options;
-        $this->options['tab'] = $this->options['tab'] ?? '';
-
+        $this->config = $config;
         $this->setPatterns();
     }
 
@@ -134,7 +132,8 @@ class HtmlContent
      */
     protected function setPatterns()
     {
-        $this->patterns[2]['pattern'] = sprintf(Pattern::IS_EMPTY_OPENING, implode('|', $this->options['empty_tags'] ?? []));
+        $tags = implode('|', $this->config->get('empty_tags', []));
+        $this->patterns[2]['pattern'] = sprintf(Pattern::IS_EMPTY_OPENING, $tags);
     }
 
     /**
@@ -241,7 +240,7 @@ class HtmlContent
      */
     public function removePreformats(): self
     {
-        $pattern = sprintf(Pattern::PRE, implode('|', $this->options['keep_format']));
+        $pattern = sprintf(Pattern::PRE, implode('|', $this->config->get('keep_format', [])));
 
         return $this->remove(static::PRE, $pattern);
     }
@@ -259,7 +258,7 @@ class HtmlContent
 
 
                 // Trim attributes
-                if ($this->options['attribute_trim'] ?? false) {
+                if ($this->config->get('attribute_trim', false)) {
                     $attrValue = trim($matches[3][$index]);
                     $value = str_replace($matches[3][$index], $attrValue, $value);
                 }
@@ -286,7 +285,7 @@ class HtmlContent
      */
     public function removeInlines(): self
     {
-        $pattern = sprintf(Pattern::INLINE, implode('|', $this->options['inline_tags']));
+        $pattern = sprintf(Pattern::INLINE, implode('|', $this->config->get('inline_tags', [])));
 
         return $this->deepRemove(static::INLINE, $pattern, function (array $matches) {
             foreach ($matches[0] as $index => &$value) {
@@ -423,11 +422,11 @@ class HtmlContent
      */
     protected function indentAction(int &$position, int $rule, string $match): string
     {
-        if(static::DISCARD === $rule) {
+        if (static::DISCARD === $rule) {
             return '';
         }
 
-        $tab = $this->options['tab'];
+        $tab = $this->config->get('tab', '');
 
         switch ($rule) {
             case static::INCREASE_INDENT:

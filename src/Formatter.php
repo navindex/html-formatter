@@ -3,6 +3,7 @@
 namespace Navindex\HtmlFormatter;
 
 use Navindex\HtmlFormatter\HtmlContent;
+use Navindex\SimpleConfig\Config;
 
 /**
  * Formatter class.
@@ -32,16 +33,24 @@ class Formatter
     ];
 
     /**
+     * Configuration settings.
+     *
+     * @var \Navindex\SimpleConfig\Config
+     */
+    protected $config;
+
+    /**
      * Constructor.
      *
-     * @param null|array <string, mixed> $options  Associative array of option names and values
+     * @param null|array <string, mixed> $config Associative array of option names and values
      *
      * @return void
      */
-    public function __construct(?array $options = null)
+    public function __construct(?array $config = null)
     {
-        if (!empty($options)) {
-            $this->options($options);
+        $this->config = new Config($this->options);
+        if (is_array($config)) {
+            $this->config->merge($config);
         }
     }
 
@@ -52,18 +61,23 @@ class Formatter
      *
      * @return self
      */
-    public function options(array $options): self
+    public function setConfig(Config $config): self
     {
-        foreach ($this->options as $key => &$value) {
-            if (is_scalar($value) && is_scalar($options[$key] ?? null)) {
-                $value = $options[$key];
-            }
-            if (is_array($value) && is_array($options[$key] ?? null)) {
-                $value = array_unique(array_merge($value, $options[$key]));
-            }
-        }
+        $this->config = $config;
 
         return $this;
+    }
+
+    /**
+     * Gets the formatter options.
+     *
+     * @param array <string, mixed> $options Associative array of option names and values
+     *
+     * @return self
+     */
+    public function getConfig(): Config
+    {
+        return $this->config;
     }
 
     /**
@@ -75,7 +89,7 @@ class Formatter
      */
     public function beautify(string $input): string
     {
-        $html = new HtmlContent($input, $this->options);
+        $html = new HtmlContent($input, $this->config);
         $attrCleanup = $this->options['attribute_cleanup'] ?? false;
         $cdataCleanup = $this->options['cdata_cleanup'] ?? false;
 
@@ -114,7 +128,7 @@ class Formatter
         $attrCleanup = $this->options['attribute_cleanup'] ?? false;
         $cdataCleanup = $this->options['cdata_cleanup'] ?? false;
 
-        $html = new HtmlContent($input, $this->options);
+        $html = new HtmlContent($input, $this->config);
 
         return $html
             ->removePreformats()

@@ -54,7 +54,7 @@ class Formatter
     /**
      * Sets the formatter config.
      *
-     * @param \Navindex\SimpleConfig\Config|mixed[] $config Associative array of option names and values
+     * @param null|\Navindex\SimpleConfig\Config|mixed[] $config Associative array of option names and values
      *
      * @return self
      */

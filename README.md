@@ -51,19 +51,19 @@ $formatter = new Formatter($options);
 $output = $formatter->beautify($input);
 ```
 
-## 5. Options
+## 5. Configuration
 
-`Formatter` constructor accepts the following options that control indentation:
+`Formatter` is using **[Simple config](https://github.com/navindex/simple-config)** to adjust its configuration settings.
 
-| Name                | Data type | Default           | Description                                                                       |
-| :------------------ | :-------- | :---------------- | :-------------------------------------------------------------------------------- |
-| `tab`               | string    | _4 spaces_        | Character(s) used for indentation. Defaults to 4 spaces.                          |
-| `empty_tags`        | array     | [see below](#5-1) | Here you can add more self-closing tags.                                          |
-| `inline_tags`       | array     | [see below](#5-2) | Here you can add more inline tags, or change any block tags and make them inline. |
-| `keep_format`       | array     | [see below](#5-3) | Here you can add more tags to be exluded of formatting.                           |
-| `attribute_trim`    | boolean   | _false_           | Remove leading and trailing whitespace in the attribute values.                   |
-| `attribute_cleanup` | boolean   | _false_           | Replace all whitespaces with a single space in the attribute values.              |
-| `cdata_cleanup`     | boolean   | _false_           | Replace all whitespaces with a single space in CDATA.                             |
+| Name                | Type    | Default           | Description                                                                       |
+| :------------------ | :------ | :---------------- | :-------------------------------------------------------------------------------- |
+| `tab`               | string  | _4 spaces_        | Character(s) used for indentation. Defaults to 4 spaces.                          |
+| `empty_tags`        | array   | [see below](#5-1) | Here you can add more self-closing tags.                                          |
+| `inline_tags`       | array   | [see below](#5-2) | Here you can add more inline tags, or change any block tags and make them inline. |
+| `keep_format`       | array   | [see below](#5-3) | Here you can add more tags to be exluded of formatting.                           |
+| `attribute_trim`    | boolean | _true_            | Remove leading and trailing whitespace in the attribute values.                   |
+| `attribute_cleanup` | boolean | _false_           | Replace all whitespaces with a single space in the attribute values.              |
+| `cdata_cleanup`     | boolean | _false_           | Replace all whitespaces with a single space in CDATA.                             |
 
 <a name='5-1'></a>
 
@@ -99,10 +99,9 @@ You can set additional inline elements by adding them to the `inline_tags` optio
 use Navindex\HTMLFormatter\Formatter;
 
 $formatter = new Formatter();
-$options = [
-    'inline_tags' => ['foo', 'bar'],
-];
-$formatter->options($options);
+$config = $formatter->getConfig();
+$config->append('inline_tags', 'foo')->subtract('inline_tags', ['bar', 'baz']);
+$formatter->setConfig($config);
 ```
 
 <a name='5-2'></a>
@@ -125,10 +124,8 @@ You can set additional self-closing elements by adding them to the `empty_tags` 
 ```php
 use Navindex\HTMLFormatter\Formatter;
 
-$options = [
-    'empty_tags' => ['foo', 'bar'],
-];
-$formatter = new Formatter($options);
+$formatter = new Formatter();
+$formatter->setConfig($formatter->getConfig()->append('empty_tags', ['foo', 'bar']));
 ```
 
 <a name='5-3'></a>
@@ -143,12 +140,14 @@ You can exclude additional elements by adding them to the `keep_format` option.
 
 ## 6. Methods
 
-| Name          | Attributes  | Description                          | Example                                            |
-| :------------ | :---------- | :----------------------------------- | :------------------------------------------------- |
-| `constructor` | array\|null | Creates a `Formatter` class instance | `$formatter = new Formatter(['tag' => "\t"]);`     |
-| `options`     | array       | Configuration setter                 | `$formatter->options(['attribute_trim' => true]);` |
-| `beautify`    | string      | Beautifies the input string          | `$output = $formatter->beautify($html);`           |
-| `minify`      | string      | Minifies the input string            | `$output = $formatter->minify($html);`             |
+| Name             | Attributes          | Description                          | Example                           |
+| :--------------- | :------------------ | :----------------------------------- | :-------------------------------- |
+| `constructor`    | Config\|array\|null | Creates a `Formatter` class instance | `$f = new Formatter($config);`    |
+| `getConfig`      | -                   | Configuration getter                 | `$config = $f->getConfig();`      |
+| `getConfigArray` | -                   | Configuration getter                 | `$config = $f->getConfigArray();` |
+| `setConfig`      | Config\|array\|null | Configuration setter                 | `$f->setConfig($config);`         |
+| `beautify`       | string              | Beautifies the input string          | `$output = $f->beautify($html);`  |
+| `minify`         | string              | Minifies the input string            | `$output = $f->minify($html);`    |
 
 <!--
 # CLI

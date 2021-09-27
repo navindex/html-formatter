@@ -132,7 +132,7 @@ class HtmlContent
      */
     protected function setPatterns()
     {
-        $tags = implode('|', $this->config->get('empty_tags', []));
+        $tags = implode('|', $this->config->get('self-closing.tag', []));
         $this->patterns[2]['pattern'] = sprintf(Pattern::IS_EMPTY_OPENING, $tags);
     }
 
@@ -238,11 +238,45 @@ class HtmlContent
      *
      * @return self
      */
-    public function removePreformats(): self
+    public function removeFormatted(): self
     {
-        $pattern = sprintf(Pattern::PRE, implode('|', $this->config->get('keep_format', [])));
+        $tags = array_keys($this->config->get('formatted.tag', []));
+        $pattern = sprintf(Pattern::PRE, implode('|', $tags));
 
-        return $this->remove(static::PRE, $pattern);
+        return $this->remove(static::PRE, $pattern, function (array $matches) {
+            $cleanupEmpty = $this->config->get('formatted.cleanup-empty', false);
+            $openingBreak = $this->config->get('formatted.opening-break', false);
+            $closingBreak = $this->config->get('formatted.closing-break', false);
+            $trim = $this->config->get('formatted.trim', false);
+
+            foreach ($matches[0] as $index => &$value) {
+                // Process formatted elements
+                $tag = $matches[1][$index];
+                $content = $originalContent = $matches[2][$index];
+
+                if ($this->config->get("formatted.tag.{$tag}.trim", $trim)) {
+                    $content = trim($content);
+                }
+
+                if ($this->config->get("formatted.tag.{$tag}.opening-break", $openingBreak)) {
+                    $content = Helper::start($content, "\n");
+                }
+
+                if ($this->config->get("formatted.tag.{$tag}.closing-break", $closingBreak)) {
+                    $content = Helper::finish($content, "\n");
+                }
+
+                if ($this->config->get("formatted.tag.{$tag}.cleanup-empty", $cleanupEmpty)) {
+                    $content = empty(trim($content)) ? '' : $content;
+                }
+
+                if ($content !== $originalContent) {
+                    $value = str_replace($originalContent, $content, $value);
+                }
+            }
+
+            return $matches;
+        });
     }
 
     /**
@@ -256,11 +290,16 @@ class HtmlContent
             foreach ($matches[0] as $index => &$value) {
                 // Remove whitespace around the equal sign
 
+                if ($this->config->get('attributes.cleanup', false)) {
+                    $attrValue = preg_replace(Pattern::WHITESPACE, ' ', $matches[3][$index]) ?? $matches[3][$index];
+                    $value = str_replace($matches[3][$index], $attrValue, $value);
+                    $matches[3][$index] = $attrValue;
+                }
 
-                // Trim attributes
-                if ($this->config->get('attribute_trim', false)) {
+                if ($this->config->get('attributes.trim', false)) {
                     $attrValue = trim($matches[3][$index]);
                     $value = str_replace($matches[3][$index], $attrValue, $value);
+                    $matches[3][$index] = $attrValue;
                 }
             }
 
@@ -275,7 +314,23 @@ class HtmlContent
      */
     public function removeCdata(): self
     {
-        return $this->remove(static::CDATA, Pattern::CDATA);
+        return $this->remove(static::CDATA, Pattern::CDATA, function (array $matches) {
+            foreach ($matches[0] as $index => &$value) {
+                if ($this->config->get('cdata.cleanup', false)) {
+                    $content = preg_replace(Pattern::WHITESPACE, ' ', $matches[1][$index]) ?? $matches[1][$index];
+                    $value = str_replace($matches[1][$index], $content, $value);
+                    $matches[1][$index] = $content;
+                }
+
+                if ($this->config->get('cdata.trim', false)) {
+                    $content = trim($matches[1][$index]);
+                    $value = str_replace($matches[1][$index], $content, $value);
+                    $matches[1][$index] = $content;
+                }
+            }
+
+            return $matches;
+        });
     }
 
     /**
@@ -285,7 +340,7 @@ class HtmlContent
      */
     public function removeInlines(): self
     {
-        $pattern = sprintf(Pattern::INLINE, implode('|', $this->config->get('inline_tags', [])));
+        $pattern = sprintf(Pattern::INLINE, implode('|', $this->config->get('inline.tag', [])));
 
         return $this->deepRemove(static::INLINE, $pattern, function (array $matches) {
             foreach ($matches[0] as $index => &$value) {
@@ -323,7 +378,7 @@ class HtmlContent
      *
      * @return self
      */
-    public function restorePreformats(): self
+    public function restoreFormatted(): self
     {
         return $this->restore(static::PRE);
     }
@@ -412,7 +467,7 @@ class HtmlContent
     }
 
     /**
-     * Undocumented function
+     * Indenter core.
      *
      * @param integer $position
      * @param integer $rule

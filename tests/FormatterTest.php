@@ -77,29 +77,17 @@ final class FormatterTest extends TestCase
      */
     public function providerConstructor(): Iterator
     {
-        $defaultConfig = (new class() extends Formatter
-        {
-            /**
-             * @return mixed[]
-             */
-            public function _getDefaultConfig(): array
-            {
-                return $this->defaultConfig;
-            }
-        })->_getDefaultConfig();
-
         $config = [
-            'tab'         => 'xx',
-            'empty_tags'  => ['empty_tag', 'another_empty_tag'],
-            'inline_tags' => ['inline_tag', 'another_inline_tag'],
-            'keep_format' => ['preformatted_tag', 'another_preformatted_tag'],
-            'attribute_trim' => true,
-            'attribute_cleanup' => true,
-            'cdata_cleanup' => true,
+            'tab'           => 'xx',
+            'self-closing'  => ['tag' => ['empty_tag', 'another_empty_tag']],
+            'inline'        => ['tag' => ['inline_tag', 'another_inline_tag']],
+            'formatted'     => ['formatted_tag' => [], 'another_formatted_tag' => []],
+            'attributes'    => ['trim' => true, 'cleanup' => true],
+            'cdata'         => ['trim' => true, 'cleanup' => true],
         ];
 
-        yield [null, new Config($defaultConfig)];
-        yield [[], new Config([])];
+        yield [null, new Config()];
+        yield [[], new Config()];
         yield [$config, new Config($config)];
     }
 
@@ -112,12 +100,17 @@ final class FormatterTest extends TestCase
     {
         $config = [
             'tab'         => '',
-            'empty_tags'  => ['empty_tag', 'another_empty_tag'],
-            'inline_tags' => ['inline_tag', 'another_inline_tag'],
+            'self-closing'  => ['empty_tag', 'another_empty_tag'],
+            'inline' => ['inline_tag', 'another_inline_tag'],
             'keep_format' => ['preformatted_tag', 'another_preformatted_tag'],
-            'attribute_trim' => false,
-            'attribute_cleanup' => false,
-            'cdata_cleanup' => false,
+            'attributes' => [
+                'trim' => false,
+                'cleanup' => false,
+            ],
+            'cdata' => [
+                'trim' => false,
+                'cleanup' => false,
+            ],
         ];
 
         yield [null, []];
@@ -172,11 +165,14 @@ final class FormatterTest extends TestCase
                     <script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript"></script>
                     <meta name='auth' content=1 id="auth">
                     <title> Edit product </title>
-                    <script> Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement('style'), rxEsc = /([.*+?^$()|\[\]\/\\])/g</script>
+                    <script>
+            Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement('style'), rxEsc = /([.*+?^$()|\[\]\/\\])/g
+            </script>
                     <meta name="robots" content="noindex" />
                 </head>
                 <body>
-                    <pre>   something
+                    <pre>
+               something
                     comes
                     here </pre>
                     <textarea>
@@ -193,8 +189,6 @@ final class FormatterTest extends TestCase
                     </html>
             OUTPUT,
         ];
-        // yield[];
-        // yield[];
     }
 
     /**
@@ -234,16 +228,17 @@ final class FormatterTest extends TestCase
             </svg>
                 </body> </html>
             INPUT,
-            <<<OUTPUT
-            <!DOCTYPE html><html> <head> <script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript">
-            </script> <meta name='auth' content=1 id="auth"> <title> Edit product </title> <script> Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement('style'), rxEsc = /([.*+?^$()|\[\]\/\])/g</script> <meta name="robots" content="noindex" />> </head> <body> <pre>   something
-                    comes
-                    here </pre> <textarea>
-                        something comes
-                        here too </textarea> <div class="container-fluid" data-controller="base" > <div class="row"> <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" reserveAspectRatio="xMidYMid meet" viewBox="0 0 111.62013 21.110666" > <g class="a"><path d="m30.286 20.4727h-4.264v-19.8613h4.264z" /></g> </svg> </body> </html>
-            OUTPUT,
+            '<!DOCTYPE html><html> <head> <script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3"' .
+            ' type="text/javascript"></script> <meta name=\'auth\' content=1 id="auth"> <title> Edit product </title> <script>' .
+            'Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement(\'style\'), rxEsc = /([.*+?^$()|\[\]\/\])/g' .
+            '</script> <meta name="robots" content="noindex" />> </head> <body> <pre>   something' .
+            "\n        comes" .
+            "\n        here </pre> <textarea>" .
+            "\n            something comes" .
+            "\n            here too </textarea>" .
+            ' <div class="container-fluid" data-controller="base" > <div class="row"> <svg xmlns="http://www.w3.org/2000/svg" ' .
+            'xmlns:xlink="http://www.w3.org/1999/xlink" reserveAspectRatio="xMidYMid meet" viewBox="0 0 111.62013 21.110666" > ' .
+            '<g class="a"><path d="m30.286 20.4727h-4.264v-19.8613h4.264z" /></g> </svg> </body> </html>',
         ];
-        // yield[];
-        // yield[];
     }
 }

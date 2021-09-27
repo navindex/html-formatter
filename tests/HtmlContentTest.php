@@ -21,20 +21,39 @@ final class HtmlContentTest extends TestCase
      * @var array <string, mixed>
      */
     protected $config = [
-        'tab'         => '    ',
-        'empty_tags'  => [
-            'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input',
-            'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr',
-            'animate', 'stop', 'path', 'circle', 'line', 'polyline', 'rect', 'use',
+        'tab' => '    ',
+        'self-closing'  => [
+            'tag' => [
+                'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input',
+                'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr',
+                'animate', 'stop', 'path', 'circle', 'line', 'polyline', 'rect', 'use',
+            ],
         ],
-        'inline_tags' => [
-            'a', 'abbr', 'acronym', 'b', 'bdo', 'big', 'br', 'button', 'cite', 'code', 'dfn', 'em',
-            'i', 'img', 'kbd', 'label', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'tt', 'var',
+        'inline' => [
+            'tag' => [
+                'a', 'abbr', 'acronym', 'b', 'bdo', 'big', 'br', 'button', 'cite', 'code', 'dfn', 'em',
+                'i', 'img', 'kbd', 'label', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'tt', 'var',
+            ],
         ],
-        'keep_format' => ['script', 'pre', 'textarea'],
-        'attribute_trim' => false,
-        'attribute_cleanup' => false,
-        'cdata_cleanup' => false,
+        'formatted' => [
+            'tag' => [
+                'script' => ['closing-break' => true, 'trim' => true],
+                'pre' => [],
+                'textarea' => [],
+            ],
+            'cleanup-empty' => true,
+            'opening-break' => true,
+            'closing-break' => false,
+            'trim' => false,
+        ],
+        'attributes' => [
+            'trim' => true,
+            'cleanup' => false,
+        ],
+        'cdata' => [
+            'trim' => true,
+            'cleanup' => true,
+        ],
     ];
 
     /**
@@ -110,52 +129,33 @@ final class HtmlContentTest extends TestCase
     }
 
     /**
-     * @dataProvider providerPreformats
+     * @dataProvider providerFormatted
      *
-     * @param string                   $html
-     * @param array <string, string[]> $config
-     * @param string[]                 $parts
-     * @param string                   $expected
+     * @param string   $html
+     * @param string[] $parts
+     * @param string   $expected
      *
      * @return void
      */
-    public function testRemovePreformats(string $html, array $config, array $parts, string $expected)
+    public function testRemoveFormatted(string $html, array $parts, string $expected)
     {
-        $hc = new HtmlContent($html, new Config($config));
-        $hc->removePreformats();
+        $hc = new HtmlContent($html, new Config($this->config));
+        $hc->removeFormatted();
         $this->assertSame($expected, (string)$hc);
     }
 
     /**
-     * @dataProvider providerPreformats
+     * @dataProvider providerFormatted
      *
-     * @param string                   $html
-     * @param array <string, string[]> $config
-     * @param string[]                 $parts
-     * @param string                   $htmlReplaced
-     *
-     * @return void
-     */
-    public function testRestorePreformats(string $html, array $config, array $parts, string $htmlReplaced)
-    {
-        $hc = new HtmlContent($html, new Config($config));
-        $hc->removePreformats()->restorePreformats();
-        $this->assertSame($html, (string)$hc);
-    }
-
-    /**
-     * @dataProvider providerPreformats
-     *
-     * @param string                   $html
-     * @param array <string, string[]> $config
-     * @param string[]                 $expected
-     * @param string                   $htmlReplaced
+     * @param string   $html
+     * @param string[] $expected
+     * @param string   $htmlReplaced
      *
      * @return void
      */
-    public function testPreformatParts(string $html, array $config, array $expected, string $htmlReplaced)
+    public function testFormattedParts(string $html, array $expected, string $htmlReplaced)
     {
-        $hc = new class($html, new Config($config)) extends HtmlContent
+        $hc = new class($html, new Config($this->config)) extends HtmlContent
         {
             /**
              * @return null|array <int, string>
@@ -165,8 +165,23 @@ final class HtmlContentTest extends TestCase
                 return $this->parts[static::PRE] ?? null;
             }
         };
-        $hc->removePreformats();
+        $hc->removeFormatted();
         $this->assertSame($expected, $hc->_getPreformatParts());
+    }
+
+    /**
+     * @dataProvider providerRestoreFormatted
+     *
+     * @param string   $html
+     * @param string   $expected
+     *
+     * @return void
+     */
+    public function testRestoreFormatted(string $html, string $expected)
+    {
+        $hc = new HtmlContent($html, new Config($this->config));
+        $hc->removeFormatted()->restoreFormatted();
+        $this->assertSame($expected, (string)$hc);
     }
 
     /**
@@ -236,7 +251,9 @@ final class HtmlContentTest extends TestCase
      */
     public function testAttributeConfig(string $html, array $config, string $expected)
     {
-        $hc = new HtmlContent($html, new Config($config));
+        $c = $this->config;
+        $c['attributes'] = $config;
+        $hc = new HtmlContent($html, new Config($c));
         $hc->removeAttributes()->restoreAttributes();
         $this->assertSame($expected, (string)$hc);
     }
@@ -295,6 +312,24 @@ final class HtmlContentTest extends TestCase
         };
         $hc->removeCdata();
         $this->assertSame($expected, $hc->getCdataParts());
+    }
+
+    /**
+     * @dataProvider providerCdataConfig
+     *
+     * @param string                   $html
+     * @param array <string, string[]> $config
+     * @param string                   $expected
+     *
+     * @return void
+     */
+    public function testCdataConfig(string $html, array $config, string $expected)
+    {
+        $c = $this->config;
+        $c['cdata'] = $config;
+        $hc = new HtmlContent($html, new Config($c));
+        $hc->removeCdata()->restoreCdata();
+        $this->assertSame($expected, (string)$hc);
     }
 
     /**
@@ -475,15 +510,14 @@ final class HtmlContentTest extends TestCase
      *
      * @return \Iterator <int, array <int, string|array>>
      */
-    public function providerPreformats(): Iterator
+    public function providerFormatted(): Iterator
     {
-        $config = ['keep_format' => ['script', 'pre', 'textarea']];
-
         yield [
             <<<INPUT
             <html>
                 <head>
-                    <script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript"></script>
+                    <script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript">
+                    </script>
                     <meta name='auth' content=1 id="auth">
                     <title>
                         Edit product
@@ -501,11 +535,10 @@ final class HtmlContentTest extends TestCase
                         here too </textarea>
                 </body></html>
             INPUT,
-            $config,
             [
                 '<script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript"></script>',
-                '<script> Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement(\'style\'), rxEsc = /([.*+?^$()|\[\]\/\\])/g</script>',
-                "<pre>   something\n        comes\n        here </pre>",
+                "<script>\nSfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement('style'), rxEsc = /([.*+?^$()|\[\]\/\\])/g\n</script>",
+                "<pre>\n   something\n        comes\n        here </pre>",
                 "<textarea>\n            something comes\n            here too </textarea>",
             ],
             <<<OUTPUT
@@ -523,6 +556,63 @@ final class HtmlContentTest extends TestCase
                 <body>
                     ᐃpre:2:preᐃ
                     ᐃpre:3:preᐃ
+                </body></html>
+            OUTPUT,
+        ];
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return \Iterator <int, array <int, string|array>>
+     */
+    public function providerRestoreFormatted(): Iterator
+    {
+        yield [
+            <<<INPUT
+            <html>
+                <head>
+                    <script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript">
+                    </script>
+                    <meta name='auth' content=1 id="auth">
+                    <title>
+                        Edit product
+                    </title>
+                    <script> Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement('style'), rxEsc = /([.*+?^$()|\[\]\/\\])/g</script>
+
+                    <meta name="robots" content="noindex" />>
+                </head>
+                <body>
+                    <pre>   something
+                    comes
+                    here </pre>
+                    <textarea>
+                        something comes
+                        here too </textarea>
+                </body></html>
+            INPUT,
+            <<<OUTPUT
+            <html>
+                <head>
+                    <script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript"></script>
+                    <meta name='auth' content=1 id="auth">
+                    <title>
+                        Edit product
+                    </title>
+                    <script>
+            Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement('style'), rxEsc = /([.*+?^$()|\[\]\/\\])/g
+            </script>
+
+                    <meta name="robots" content="noindex" />>
+                </head>
+                <body>
+                    <pre>
+               something
+                    comes
+                    here </pre>
+                    <textarea>
+                        something comes
+                        here too </textarea>
                 </body></html>
             OUTPUT,
         ];
@@ -647,9 +737,7 @@ final class HtmlContentTest extends TestCase
                     <a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>
                 </body></html>
             INPUT,
-            [
-                'attribute_trim' => true,
-            ],
+            ['trim' => true],
             <<<OUTPUT
             <html lang = "en_AU">
                 <head>
@@ -662,6 +750,36 @@ final class HtmlContentTest extends TestCase
                 </head>
                 <body>
                     <a class="header-brand   order-last" href="http://localhost/dashboard/" >   Dashboard   </a>
+                </body></html>
+            OUTPUT,
+        ];
+        yield [
+            <<<INPUT
+            <html lang = "  en_AU">
+                <head>
+                    <meta charset  ="utf-8 ">
+                    <meta http-equiv=   "X-UA-Compatible" content="IE=edge">
+                    <meta name='viewport   ' content=" width=device-width,    initial-scale=1,
+                        shrink-to-fit=no">
+                    <meta name='   auth' content=1
+                            id="auth">
+                </head>
+                <body>
+                    <a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>
+                </body></html>
+            INPUT,
+            ['trim' => true, 'cleanup' => true],
+            <<<OUTPUT
+            <html lang = "en_AU">
+                <head>
+                    <meta charset  ="utf-8">
+                    <meta http-equiv=   "X-UA-Compatible" content="IE=edge">
+                    <meta name='viewport' content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                    <meta name='auth' content=1
+                            id="auth">
+                </head>
+                <body>
+                    <a class="header-brand order-last" href="http://localhost/dashboard/" >   Dashboard   </a>
                 </body></html>
             OUTPUT,
         ];
@@ -708,6 +826,67 @@ final class HtmlContentTest extends TestCase
      *
      * @return \Iterator <int, array <int, string|array>>
      */
+    public function providerCdataConfig(): Iterator
+    {
+        yield [
+            <<<INPUT
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <style><![CDATA[
+                    .a {
+                        fill: #28231d;
+                    }
+                ]]></style>
+                <g class="a">
+                    <path d="m30.286 20.4727h-4.264v-19.8613h4.264z" />
+                    <path d="m33.8616 20.472v-19.8613h4.264v16.56h8.6107v3.3013z" />
+                </g>
+            </svg>
+            INPUT,
+            ['trim' => true],
+            <<<OUTPUT
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <style><![CDATA[.a {
+                        fill: #28231d;
+                    }]]></style>
+                <g class="a">
+                    <path d="m30.286 20.4727h-4.264v-19.8613h4.264z" />
+                    <path d="m33.8616 20.472v-19.8613h4.264v16.56h8.6107v3.3013z" />
+                </g>
+            </svg>
+            OUTPUT,
+        ];
+        yield [
+            <<<INPUT
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <style><![CDATA[
+                    .a {
+                        fill: #28231d;
+                    }
+                ]]></style>
+                <g class="a">
+                    <path d="m30.286 20.4727h-4.264v-19.8613h4.264z" />
+                    <path d="m33.8616 20.472v-19.8613h4.264v16.56h8.6107v3.3013z" />
+                </g>
+            </svg>
+            INPUT,
+            ['trim' => true, 'cleanup' => true],
+            <<<OUTPUT
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <style><![CDATA[.a { fill: #28231d; }]]></style>
+                <g class="a">
+                    <path d="m30.286 20.4727h-4.264v-19.8613h4.264z" />
+                    <path d="m33.8616 20.472v-19.8613h4.264v16.56h8.6107v3.3013z" />
+                </g>
+            </svg>
+            OUTPUT,
+        ];
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return \Iterator <int, array <int, string|array>>
+     */
     public function providerInlines(): Iterator
     {
         yield [
@@ -725,8 +904,8 @@ final class HtmlContentTest extends TestCase
                 '<a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>',
                 '<strong>bold</strong>',
                 '<button data-anibutton-label="Deleting..." data-action="click->anibutton#confirm" ' .
-                'data-anibutton-confirm="Are you sure you want to delete this product?">' .
-                "\n        Delete\n    </button>",
+                    'data-anibutton-confirm="Are you sure you want to delete this product?">' .
+                    "\n        Delete\n    </button>",
                 '<span>This is ᐃinline:1:inlineᐃ.</span>'
             ],
             <<<OUTPUT

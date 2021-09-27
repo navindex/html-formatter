@@ -24,7 +24,7 @@
     "require": {
         "php": "^7.3|^8.0",
         "ext-mbstring": "*",
-        "navindex/simple-config": ">0.1.0"
+        "navindex/simple-config": "^0.2.0"
     },
     "require-dev": {
         "larapack/dd": "^1.1",

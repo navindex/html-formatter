@@ -29,9 +29,24 @@ final class HelperTest extends TestCase
     }
 
     /**
+     * @dataProvider providerStart
+     *
+     * @param string $line
+     * @param string #prefix
+     * @param string $expected
+     *
+     * @return void
+     */
+    public function testStart(string $line, string $prefix, string $expected)
+    {
+        $this->assertSame($expected, Helper::start($line, $prefix));
+    }
+
+    /**
      * @dataProvider providerFinish
      *
      * @param string $line
+     * @param string #cap
      * @param string $expected
      *
      * @return void
@@ -80,6 +95,25 @@ final class HelperTest extends TestCase
         yield ['', "{$marker}:%s:{$marker}"];
         yield ['-1', "{$marker}-1:%s:-1{$marker}"];
         yield ["'", "{$marker}':%s:'{$marker}"];
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return \Iterator <int, array <int, string>>
+     */
+    public function providerStart(): Iterator
+    {
+        yield ['this line', 'extend ', 'extend this line'];
+        yield [' this line', 'extend', 'extend this line'];
+        yield [' this line', 'extend ', 'extend  this line'];
+        yield ['extend this line', 'extend ', 'extend this line'];
+        yield ['aaa', '', 'aaa'];
+        yield ['', 'aaa', 'aaa'];
+        yield ['', '', ''];
+        yield ['-1', '-2', '-2-1'];
+        yield ['123', '456', '456123'];
+        yield ['456123', '456', '456123'];
     }
 
     /**

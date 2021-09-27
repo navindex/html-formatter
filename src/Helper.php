@@ -28,11 +28,26 @@ abstract class Helper
      *
      * @return string
      */
-    public static function finish(string $value, string $cap)
+    public static function finish(string $value, string $cap): string
     {
         $quoted = preg_quote($cap, '/');
 
         return preg_replace('/(?:' . $quoted . ')+$/u', '', $value) . $cap;
+    }
+
+    /**
+     * Begins a string with a single instance of a given value.
+     *
+     * @param  string  $value
+     * @param  string  $prefix
+     *
+     * @return string
+     */
+    public static function start(string $value, string $prefix): string
+    {
+        $quoted = preg_quote($prefix, '/');
+
+        return $prefix.preg_replace('/^(?:'.$quoted.')+/u', '', $value);
     }
 
     /**

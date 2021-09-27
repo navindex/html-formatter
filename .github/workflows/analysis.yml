@@ -8,11 +8,11 @@ on:
 
 jobs:
   build:
-    name: PHP ${{ matrix.php-versions }} Static Analysis
+    name: PHP ${{ matrix.php }} Static Analysis
 
     strategy:
       matrix:
-        php-versions: ['7.3', '7.4', '8.0']
+        php: ['7.3', '7.4', '8.0']
 
     runs-on: ubuntu-latest
 
@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer update --prefer-stable --prefer-dist --no-progress
 
       - name: Run static code analysis
         run: composer run-script check

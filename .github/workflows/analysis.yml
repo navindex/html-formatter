@@ -23,7 +23,7 @@ jobs:
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php- }}
           tools: composer, phpstan
           extensions: intl, json, mbstring, xml
         env:

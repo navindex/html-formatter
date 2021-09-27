@@ -45,15 +45,16 @@ $output = $formatter->beautify($input);
 
 `Formatter` is using **[Simple config](https://github.com/navindex/simple-config)** to adjust its configuration settings.
 
-| Name                | Type    | Default           | Description                                                                       |
-| :------------------ | :------ | :---------------- | :-------------------------------------------------------------------------------- |
-| `tab`               | string  | _4 spaces_        | Character(s) used for indentation. Defaults to 4 spaces.                          |
-| `empty_tags`        | array   | [see below](#5-1) | Here you can add more self-closing tags.                                          |
-| `inline_tags`       | array   | [see below](#5-2) | Here you can add more inline tags, or change any block tags and make them inline. |
-| `keep_format`       | array   | [see below](#5-3) | Here you can add more tags to be exluded of formatting.                           |
-| `attribute_trim`    | boolean | _true_            | Remove leading and trailing whitespace in the attribute values.                   |
-| `attribute_cleanup` | boolean | _false_           | Replace all whitespaces with a single space in the attribute values.              |
-| `cdata_cleanup`     | boolean | _false_           | Replace all whitespaces with a single space in CDATA.                             |
+| Name                | Type    | Description                                                                                         |
+| :------------------ | :------ | :-------------------------------------------------------------------------------------------------- |
+| `tab`               | string  | Character(s) used for indentation. Defaults to 4 spaces.                                            |
+| `self-closing.tag`  | array   | Here you can add more self-closing tags. [see below](#5-1)                                          |
+| `inline.tag`        | array   | Here you can add more inline tags, or change any block tags and make them inline. [see below](#5-2) |
+| `formatted.tag`     | array   | Here you can add more tags to be exluded of formatting. [see below](#5-3)                           |
+| `attributes.trim`   | boolean | Remove leading and trailing whitespace in the attribute values.                                     |
+| `attribute.cleanup` | boolean | Replace all whitespaces with a single space in the attribute values.                                |
+| `cdata.cleanup`     | boolean | Replace all whitespaces with a single space in CDATA.                                               |
+| `cdata.trim`        | boolean | Remove leading and trailing whitespace in CDATA.                                                    |
 
 <a name='5-1'></a>
 
@@ -83,14 +84,14 @@ HTML Formatter identifies the following elements as "inline":
 This is a subset of the inline elements defined in the [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements).
 All other elements are treated as block.
 
-You can set additional inline elements by adding them to the `inline_tags` option.
+You can set additional inline elements by adding them to the `inline.tag` option.
 
 ```php
 use Navindex\HTMLFormatter\Formatter;
 
 $formatter = new Formatter();
 $config = $formatter->getConfig();
-$config->append('inline_tags', 'foo')->subtract('inline_tags', ['bar', 'baz']);
+$config->append('inline.tag', 'foo')->subtract('inline.tag', ['bar', 'baz']);
 $formatter->setConfig($config);
 ```
 
@@ -109,13 +110,13 @@ HTML Formatter identifies the following elements as "inline":
 This is a subset of the empty elements defined in the [MDN](https://developer.mozilla.org/en-US/docs/Glossary/empty_element).
 All other elements require closing tag.
 
-You can set additional self-closing elements by adding them to the `empty_tags` option.
+You can set additional self-closing elements by adding them to the `self-closing.tag` option.
 
 ```php
 use Navindex\HTMLFormatter\Formatter;
 
 $formatter = new Formatter();
-$formatter->setConfig($formatter->getConfig()->append('empty_tags', ['foo', 'bar']));
+$formatter->setConfig($formatter->getConfig()->append('self-closing.tag', ['foo', 'bar']));
 ```
 
 <a name='5-3'></a>
@@ -126,7 +127,38 @@ Specific element will be not touched by the formatter. The built in preformatted
 
 -   `script`, `pre`, `textarea`.
 
-You can exclude additional elements by adding them to the `keep_format` option.
+You can exclude additional elements by adding them to the `formatted.tag` option.
+
+There settings for all the formatted tags are the following:
+
+| Setting                       | Type    | Description                                                 |
+| :---------------------------- | :------ | :---------------------------------------------------------- |
+| `formatted.tag.cleanup-empty` | boolean | Removes the inner content if it has only whitespace.        |
+| `formatted.tag.opening-break` | boolean | Inserts a line break after the opening tag.                 |
+| `formatted.tag.closing-break` | boolean | Inserts a line break before the closing tag.                |
+| `formatted.tag.trim`          | boolean | Removes the leading and trailing whitespace of the content. |
+
+You can also change the settings for a specific tag. For example, disabling the `cleanup-empty` setting for the `script` tag looks like this:
+
+```php
+use Navindex\HTMLFormatter\Formatter;
+
+$formatter = new Formatter();
+$config = $formatter->getConfig();
+$config->set('formatted.tag.script.cleanup-empty', false);
+$formatter->setConfig($config);
+```
+
+### 5.4. Attributes
+
+Additional settings for formatted tags are the following:
+
+| Setting         | Type    | Description                                                 |
+| :-------------- | :------ | :---------------------------------------------------------- |
+| `cleanup-empty` | boolean | Removes the inner content if it has only whitespace.        |
+| `opening-break` | boolean | Inserts a line break after the opening tag.                 |
+| `closing-break` | boolean | Inserts a line break before the closing tag.                |
+| `trim`          | boolean | Removes the leading and trailing whitespace of the content. |
 
 ## 6. Methods
 
@@ -139,46 +171,15 @@ You can exclude additional elements by adding them to the `keep_format` option.
 | `beautify`       | string              | Beautifies the input string          | `$output = $f->beautify($html);`  |
 | `minify`         | string              | Minifies the input string            | `$output = $f->minify($html);`    |
 
-<!--
-# CLI
-
-HTML Formatter can be used via the CLI script `./bin/html formatter.php`.
-
-```sh
-php ./bin/html formatter.php
-
-Indent HTML.
-
-Options:
-    --input=./input_file.html
-        Input file
-    --indentation_character="    "
-        Character(s) used for indentation. Defaults to 4 whitespace characters.
-    --inline
-        A list of comma separated "inline" element names.
-    --block
-        A list of comma separated "block" element names.
-
-Examples:
-    ./html formatter.php --input="./input.html"
-        Indent "input.html" file and print the output to STDOUT.
-
-    ./html formatter.php --input="./input.html" | tee ./output.html
-        Indent "input.html" file and dump the output to "output.html".
-
-    ./html formatter.php --input="./input.html" --indentation_character="\t"
-        Indent "input.html" file using tab to indent the markup.
-
-    ./html formatter.php --input="./input.html" --inline="div,p"
-        Indent "input.html" file treating <div> and <p> elements as inline.
-
-    ./html formatter.php --input="./input.html" --block="span,em"
-        Indent "input.html" file treating <span> and <em> elements as block.
-``` -->
+<!-- CLI is currently not available -->
 
 ## 7. Known issues
 
 As any recent repository, it could have several issues. Use it wisely.
+
+| TODO list                                                        |
+| :--------------------------------------------------------------- |
+| Remove whitespace before `>` in the opening tags                 |
 
 ## 8. Credits
 

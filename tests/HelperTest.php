@@ -32,7 +32,7 @@ final class HelperTest extends TestCase
      * @dataProvider providerStart
      *
      * @param string $line
-     * @param string #prefix
+     * @param string $prefix
      * @param string $expected
      *
      * @return void
@@ -46,7 +46,7 @@ final class HelperTest extends TestCase
      * @dataProvider providerFinish
      *
      * @param string $line
-     * @param string #cap
+     * @param string $cap
      * @param string $expected
      *
      * @return void

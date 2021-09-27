@@ -140,7 +140,7 @@ class Formatter
      */
     public function getConfigArray(): array
     {
-        return $this->config ? $this->config->toArray() : [];
+        return (null === $this->config) ? [] : $this->config->toArray();
     }
 
     /**

@@ -507,7 +507,7 @@ class HtmlContent
      */
     public function getLog(): ?array
     {
-        return $this->logger ? $this->logger->get() : null;
+        return isset($this->logger) ? $this->logger->get() : null;
     }
 
     /**

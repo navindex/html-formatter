@@ -9,7 +9,7 @@ abstract class Pattern
     const PRE    = '/<(%s)\b[^>]*>([\s\S]*?)<\/\1>/mi';
     const INLINE = '/<(%s)\b[^>]*>(?:[^<]*)<\/\1>/mi';
     const ATTRIBUTE = '/([a-z0-9_:-]+)\s*=\s*(["\'])([\s\S]*?)\2/mi';
-    const CDATA = '/<!\[CDATA\[[\s\S]*?\]\]>/mi';
+    const CDATA = '/<!\[CDATA\[([\s\S]*?)\]\]>/mi';
     const WHITESPACE = '/(\s+)/mi';
 
     const IS_DOCTYPE = '/^<!([^>]*)>/';

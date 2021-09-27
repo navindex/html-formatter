@@ -482,17 +482,18 @@ class HtmlContent
         }
 
         $tab = $this->config->get('tab', '');
+        $lineBreak = $this->config->get('line-break', "\n");
 
         switch ($rule) {
             case static::INCREASE_INDENT:
-                $output = str_repeat($tab, $position++) . $match . "\n";
+                $output = str_repeat($tab, $position++) . $match . $lineBreak;
                 break;
             case static::DECREASE_INDENT:
                 $position = --$position < 0 ? 0 : $position;
-                $output = str_repeat($tab, $position) . $match . "\n";
+                $output = str_repeat($tab, $position) . $match . $lineBreak;
                 break;
             default:
-                $output = str_repeat($tab, $position) . $match . "\n";
+                $output = str_repeat($tab, $position) . $match . $lineBreak;
                 break;
         }
 

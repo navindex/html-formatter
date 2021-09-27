@@ -55,6 +55,7 @@ class Formatter
      */
     protected $beautifyConfig = [
         'tab' => '    ',
+        'line-break' => "\n",
         'formatted' => [
             'tag' => [
                 'script' => ['closing-break' => true, 'trim' => true],
@@ -73,6 +74,7 @@ class Formatter
      */
     protected $minifyConfig = [
         'tab' => '',
+        'line-break' => '',
         'formatted' => [
             'tag' => [
                 'script' => ['trim' => true],
@@ -193,6 +195,7 @@ class Formatter
             ->removeAttributes()
             ->removeCdata()
             ->removeExtraWhitespace()
+            ->indent()
             ->restoreCdata()
             ->restoreAttributes()
             ->restoreFormatted();

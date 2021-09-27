@@ -55,7 +55,7 @@ class Formatter
      */
     protected $beautifyConfig = [
         'tab' => '    ',
-        'line-break' => "\n",
+        'line-break' => PHP_EOL,
         'formatted' => [
             'tag' => [
                 'script' => ['closing-break' => true, 'trim' => true],

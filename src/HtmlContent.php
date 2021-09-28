@@ -248,6 +248,7 @@ class HtmlContent
             $openingBreak = $this->config->get('formatted.opening-break', false);
             $closingBreak = $this->config->get('formatted.closing-break', false);
             $trim = $this->config->get('formatted.trim', false);
+            $eol = $this->config->get('line-break', PHP_EOL);
 
             foreach ($matches[0] as $index => &$value) {
                 // Process formatted elements
@@ -259,11 +260,11 @@ class HtmlContent
                 }
 
                 if ($this->config->get("formatted.tag.{$tag}.opening-break", $openingBreak)) {
-                    $content = Helper::start($content, "\n");
+                    $content = Helper::start($content, $eol);
                 }
 
                 if ($this->config->get("formatted.tag.{$tag}.closing-break", $closingBreak)) {
-                    $content = Helper::finish($content, "\n");
+                    $content = Helper::finish($content, $eol);
                 }
 
                 if ($this->config->get("formatted.tag.{$tag}.cleanup-empty", $cleanupEmpty)) {
@@ -482,18 +483,18 @@ class HtmlContent
         }
 
         $tab = $this->config->get('tab', '');
-        $lineBreak = $this->config->get('line-break', PHP_EOL);
+        $eol = $this->config->get('line-break', PHP_EOL);
 
         switch ($rule) {
             case static::INCREASE_INDENT:
-                $output = str_repeat($tab, $position++) . $match . $lineBreak;
+                $output = str_repeat($tab, $position++) . $match . $eol;
                 break;
             case static::DECREASE_INDENT:
                 $position = --$position < 0 ? 0 : $position;
-                $output = str_repeat($tab, $position) . $match . $lineBreak;
+                $output = str_repeat($tab, $position) . $match . $eol;
                 break;
             default:
-                $output = str_repeat($tab, $position) . $match . $lineBreak;
+                $output = str_repeat($tab, $position) . $match . $eol;
                 break;
         }
 

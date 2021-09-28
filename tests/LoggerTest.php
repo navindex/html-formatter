@@ -26,17 +26,16 @@ final class LoggerTest extends TestCase
      * @dataProvider providerPushSingle
      *
      * @param mixed   $rule
-     * @param mixed   $pattern
      * @param mixed   $subject
      * @param mixed   $matches
      * @param mixed[] $expected
      *
      * @return void
      */
-    public function testPushSingle($rule, $pattern, $subject, $matches, array $expected)
+    public function testPushSingle($rule, $subject, $matches, array $expected)
     {
         $logger = new Logger();
-        $logger->push($rule, $pattern, $subject, $matches);
+        $logger->push($rule, $subject, $matches);
 
         $this->assertSame($expected, $logger->get());
     }
@@ -64,17 +63,16 @@ final class LoggerTest extends TestCase
      * @dataProvider providerPushSingle
      *
      * @param mixed   $rule
-     * @param mixed   $pattern
      * @param mixed   $subject
      * @param mixed   $matches
      * @param mixed[] $expected
      *
      * @return void
      */
-    public function testClearSingle($rule, $pattern, $subject, $matches, array $expected)
+    public function testClearSingle($rule, $subject, $matches, array $expected)
     {
         $logger = new Logger();
-        $logger->push($rule, $pattern, $subject, $matches);
+        $logger->push($rule, $subject, $matches);
         $logger->clearLog();
 
         $this->assertSame([], $logger->get());
@@ -108,21 +106,19 @@ final class LoggerTest extends TestCase
     public function providerPushSingle(): Iterator
     {
         yield [
-            'my_rule', 'my_pattern', 'my_subject', 'my_matches', [
+            'my_rule', 'my_subject', 'my_matches', [
                 [
                     'rule'    => 'my_rule',
-                    'pattern' => 'my_pattern',
                     'subject' => 'my_subject',
                     'matches' => 'my_matches'
                 ]
             ]
         ];
         yield [
-            false, -12, null, ['something', 6, null, true], [
+            false, -12, ['something', 6, null, true], [
                 [
                     'rule'    => false,
-                    'pattern' => -12,
-                    'subject' => null,
+                    'subject' => -12,
                     'matches' => ['something', 6, null, true]
                 ]
             ]
@@ -138,26 +134,23 @@ final class LoggerTest extends TestCase
     {
         yield [
             [
-                ['my_rule', 'my_pattern', 'my_subject', 'my_matches'],
-                [false, -12, null, ['something', 6, null, true]],
-                [[], true, 0, ''],
+                ['my_rule', 'my_subject', 'my_matches'],
+                [false, null, ['something', 6, null, true]],
+                [[], 0, ''],
             ],
             [
                 [
                     'rule'    => 'my_rule',
-                    'pattern' => 'my_pattern',
                     'subject' => 'my_subject',
                     'matches' => 'my_matches'
                 ],
                 [
                     'rule'    => false,
-                    'pattern' => -12,
                     'subject' => null,
                     'matches' => ['something', 6, null, true]
                 ],
                 [
                     'rule'    => [],
-                    'pattern' => true,
                     'subject' => 0,
                     'matches' => ''
                 ]

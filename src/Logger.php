@@ -40,17 +40,15 @@ class Logger
      * Creates a new log entry.
      *
      * @param mixed $rule
-     * @param mixed $pattern
      * @param mixed $subject
      * @param mixed $matches
      *
      * @return self
      */
-    public function push($rule, $pattern, $subject, $matches): self
+    public function push($rule, $subject, $matches): self
     {
         $this->log[] = [
             'rule'    => $rule,
-            'pattern' => $pattern,
             'subject' => $subject,
             'matches' => $matches,
         ];

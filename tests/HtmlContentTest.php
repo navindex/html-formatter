@@ -537,9 +537,9 @@ final class HtmlContentTest extends TestCase
             INPUT,
             [
                 '<script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript"></script>',
-                "<script>\nSfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement('style'), rxEsc = /([.*+?^$()|\[\]\/\\])/g\n</script>",
-                "<pre>\n   something\n        comes\n        here </pre>",
-                "<textarea>\n            something comes\n            here too </textarea>",
+                '<script>' . PHP_EOL . 'Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement(\'style\'), rxEsc = /([.*+?^$()|\[\]\/\\])/g' . PHP_EOL . '</script>',
+                '<pre>' . PHP_EOL . '   something' . PHP_EOL . '        comes' . PHP_EOL . '        here </pre>',
+                '<textarea>' . PHP_EOL . '            something comes' . PHP_EOL . '            here too </textarea>',
             ],
             <<<OUTPUT
             <html>
@@ -807,7 +807,7 @@ final class HtmlContentTest extends TestCase
             </svg>
             INPUT,
             [
-                "<![CDATA[\n        .a {\n            fill: #28231d;\n        }\n    ]]>",
+                '<![CDATA[' . PHP_EOL . '        .a {' . PHP_EOL . '            fill: #28231d;' . PHP_EOL . '        }' . PHP_EOL . '    ]]>',
             ],
             <<<OUTPUT
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -905,7 +905,7 @@ final class HtmlContentTest extends TestCase
                 '<strong>bold</strong>',
                 '<button data-anibutton-label="Deleting..." data-action="click->anibutton#confirm" ' .
                     'data-anibutton-confirm="Are you sure you want to delete this product?">' .
-                    "\n        Delete\n    </button>",
+                    PHP_EOL . '        Delete' . PHP_EOL . '    </button>',
                 '<span>This is ᐃinline:1:inlineᐃ.</span>'
             ],
             <<<OUTPUT
@@ -1048,45 +1048,45 @@ final class HtmlContentTest extends TestCase
                 [
                     'rule'    => 'INCREASE INDENT',
                     'pattern' => 'OPENING TAG',
-                    'subject' => "<html>\n<head> something </head>\n<body> something,\nsomething else </body>\n</html>",
+                    'subject' => '<html>' . PHP_EOL . '<head> something </head>' . PHP_EOL . '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
                     'matches' => "<html>",
                 ],
                 [
                     'rule'    => 'DISCARD',
                     'pattern' => 'WHITESPACE',
-                    'subject' => "\n<head> something </head>\n<body> something,\nsomething else </body>\n</html>",
-                    'matches' => "\n",
+                    'subject' => PHP_EOL . '<head> something </head>' . PHP_EOL . '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
+                    'matches' => PHP_EOL,
                 ],
                 [
 
                     'rule'    => 'KEEP INDENT',
                     'pattern' => 'BLOCK TAG',
-                    'subject' => "<head> something </head>\n<body> something,\nsomething else </body>\n</html>",
-                    'matches' => "<head> something </head>",
+                    'subject' => '<head> something </head>' . PHP_EOL . '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
+                    'matches' => '<head> something </head>',
                 ],
                 [
                     'rule' => 'DISCARD',
                     'pattern' => 'WHITESPACE',
-                    'subject' => "\n<body> something,\nsomething else </body>\n</html>",
-                    'matches' => "\n",
+                    'subject' => PHP_EOL . '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
+                    'matches' => PHP_EOL,
                 ],
                 [
                     'rule' => 'KEEP INDENT',
                     'pattern' => 'BLOCK TAG',
-                    'subject' => "<body> something,\nsomething else </body>\n</html>",
-                    'matches' => "<body> something,\nsomething else </body>",
+                    'subject' => '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
+                    'matches' => '<body> something,' . PHP_EOL . 'something else </body>',
                 ],
                 [
                     'rule' => 'DISCARD',
                     'pattern' => 'WHITESPACE',
-                    'subject' => "\n</html>",
-                    'matches' => "\n",
+                    'subject' => PHP_EOL . '</html>',
+                    'matches' => PHP_EOL,
                 ],
                 [
                     'rule' => 'DECREASE INDENT',
                     'pattern' => 'CLOSING TAG',
-                    'subject' => "</html>",
-                    'matches' => "</html>",
+                    'subject' => '</html>',
+                    'matches' => '</html>',
                 ],
             ],
             <<<OUTPUT

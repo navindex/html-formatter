@@ -232,10 +232,10 @@ final class FormatterTest extends TestCase
             ' type="text/javascript"></script><meta name=\'auth\' content=1 id="auth"><title> Edit product </title><script>' .
             'Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement(\'style\'), rxEsc = /([.*+?^$()|\[\]\/\])/g' .
             '</script><meta name="robots" content="noindex" />> </head><body><pre>   something' .
-            "\n        comes" .
-            "\n        here </pre><textarea>" .
-            "\n            something comes" .
-            "\n            here too </textarea>" .
+            PHP_EOL . '        comes' .
+            PHP_EOL . '        here </pre><textarea>' .
+            PHP_EOL . '            something comes' .
+            PHP_EOL . '            here too </textarea>' .
             '<div class="container-fluid" data-controller="base" ><div class="row"><svg xmlns="http://www.w3.org/2000/svg" ' .
             'xmlns:xlink="http://www.w3.org/1999/xlink" reserveAspectRatio="xMidYMid meet" viewBox="0 0 111.62013 21.110666" >' .
             '<g class="a"><path d="m30.286 20.4727h-4.264v-19.8613h4.264z" /></g></svg></body></html>',

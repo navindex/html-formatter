@@ -482,7 +482,7 @@ class HtmlContent
         }
 
         $tab = $this->config->get('tab', '');
-        $lineBreak = $this->config->get('line-break', "\n");
+        $lineBreak = $this->config->get('line-break', PHP_EOL);
 
         switch ($rule) {
             case static::INCREASE_INDENT:

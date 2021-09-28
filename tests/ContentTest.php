@@ -6,14 +6,14 @@ namespace Navindex\HtmlFormatter\Tests;
 
 use Iterator;
 use Navindex\HtmlFormatter\Exceptions\IndentException;
-use Navindex\HtmlFormatter\HtmlContent;
+use Navindex\HtmlFormatter\Content;
 use Navindex\SimpleConfig\Config;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Navindex\HtmlFormatter\HtmlContent
+ * @covers \Navindex\HtmlFormatter\Content
  */
-final class HtmlContentTest extends TestCase
+final class ContentTest extends TestCase
 {
     /**
      * Default config to use.
@@ -48,7 +48,7 @@ final class HtmlContentTest extends TestCase
         ],
         'attributes' => [
             'trim' => true,
-            'cleanup' => false,
+            'cleanup' => true,
         ],
         'cdata' => [
             'trim' => true,
@@ -65,7 +65,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testConstructorContent(string $html)
     {
-        $hc = new HtmlContent($html, new Config($this->config));
+        $hc = new Content($html, new Config($this->config));
         $this->assertSame($html, $hc->get());
     }
 
@@ -74,7 +74,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testConstructorConfig()
     {
-        $hc = new class('some content', new Config($this->config)) extends HtmlContent
+        $hc = new class('some content', new Config($this->config)) extends Content
         {
             /**
              * @return null|array <string, mixed>
@@ -97,7 +97,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testContentToString(string $html)
     {
-        $hc = new HtmlContent($html, new Config($this->config));
+        $hc = new Content($html, new Config($this->config));
         $this->assertSame($html, (string)$hc);
     }
 
@@ -106,7 +106,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testUseLog()
     {
-        $hc = new HtmlContent('some content', new Config($this->config));
+        $hc = new Content('some content', new Config($this->config));
         $this->assertIsArray($hc->useLog(true)->getLog());
     }
 
@@ -115,7 +115,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testUseLogNoAttribute()
     {
-        $hc = new HtmlContent('some content', new Config($this->config));
+        $hc = new Content('some content', new Config($this->config));
         $this->assertIsArray($hc->useLog()->getLog());
     }
 
@@ -124,7 +124,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testDoNotUseLog()
     {
-        $hc = new HtmlContent('some content', new Config($this->config));
+        $hc = new Content('some content', new Config($this->config));
         $this->assertNull($hc->useLog(false)->getLog());
     }
 
@@ -139,7 +139,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRemoveFormatted(string $html, array $parts, string $expected)
     {
-        $hc = new HtmlContent($html, new Config($this->config));
+        $hc = new Content($html, new Config($this->config));
         $hc->removeFormatted();
         $this->assertSame($expected, (string)$hc);
     }
@@ -155,7 +155,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testFormattedParts(string $html, array $expected, string $htmlReplaced)
     {
-        $hc = new class($html, new Config($this->config)) extends HtmlContent
+        $hc = new class($html, new Config($this->config)) extends Content
         {
             /**
              * @return null|array <int, string>
@@ -179,7 +179,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRestoreFormatted(string $html, string $expected)
     {
-        $hc = new HtmlContent($html, new Config($this->config));
+        $hc = new Content($html, new Config($this->config));
         $hc->removeFormatted()->restoreFormatted();
         $this->assertSame($expected, (string)$hc);
     }
@@ -195,24 +195,30 @@ final class HtmlContentTest extends TestCase
      */
     public function testRemoveAttributes(string $html, array $parts, string $expected)
     {
-        $hc = new HtmlContent($html, new Config());
+        $hc = new Content($html, new Config());
         $this->assertSame($expected, (string)$hc->removeAttributes());
     }
 
     /**
-     * @dataProvider providerAttributes
+     * @dataProvider providerRestoreAttributes
      *
-     * @param string   $html
-     * @param string[] $parts
-     * @param string   $htmlReplaced
+     * @param string $html
+     * @param string $expected
      *
      * @return void
      */
-    public function testRestoreAttributes(string $html, array $parts, string $htmlReplaced)
+    public function testRestoreAttributes(string $html, string $expected)
     {
-        $hc = new HtmlContent($html, new Config());
+        $config =       [
+            'attributes' => [
+                'trim' => true,
+                'cleanup' => true,
+            ]
+        ];
+
+        $hc = new Content($html, new Config($config));
         $hc->removeAttributes()->restoreAttributes();
-        $this->assertSame($html, (string)$hc);
+        $this->assertSame($expected, (string)$hc);
     }
 
     /**
@@ -226,7 +232,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testAttributeParts(string $html, array $expected, string $htmlReplaced)
     {
-        $hc = new class($html, new Config()) extends HtmlContent
+        $hc = new class($html, new Config()) extends Content
         {
             /**
              * @return null|array <int, string>
@@ -253,7 +259,7 @@ final class HtmlContentTest extends TestCase
     {
         $c = $this->config;
         $c['attributes'] = $config;
-        $hc = new HtmlContent($html, new Config($c));
+        $hc = new Content($html, new Config($c));
         $hc->removeAttributes()->restoreAttributes();
         $this->assertSame($expected, (string)$hc);
     }
@@ -269,7 +275,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRemoveCdata(string $html, array $parts, string $expected)
     {
-        $hc = new HtmlContent($html, new Config());
+        $hc = new Content($html, new Config());
         $this->assertSame($expected, (string)$hc->removeCdata());
     }
 
@@ -284,7 +290,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRestoreCdata(string $html, array $parts, string $htmlReplaced)
     {
-        $hc = new HtmlContent($html, new Config());
+        $hc = new Content($html, new Config());
         $hc->removeCdata()->restoreCdata();
         $this->assertSame($html, (string)$hc);
     }
@@ -300,7 +306,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testCdataParts(string $html, array $expected, string $htmlReplaced)
     {
-        $hc = new class($html, new Config()) extends HtmlContent
+        $hc = new class($html, new Config()) extends Content
         {
             /**
              * @return null|array <int, string>
@@ -327,7 +333,7 @@ final class HtmlContentTest extends TestCase
     {
         $c = $this->config;
         $c['cdata'] = $config;
-        $hc = new HtmlContent($html, new Config($c));
+        $hc = new Content($html, new Config($c));
         $hc->removeCdata()->restoreCdata();
         $this->assertSame($expected, (string)$hc);
     }
@@ -343,24 +349,23 @@ final class HtmlContentTest extends TestCase
      */
     public function testRemoveInlines(string $html, array $parts, string $expected)
     {
-        $hc = new HtmlContent($html, new Config($this->config));
+        $hc = new Content($html, new Config($this->config));
         $this->assertSame($expected, (string)$hc->removeInlines());
     }
 
     /**
-     * @dataProvider providerInlines
+     * @dataProvider providerRestoreInlines
      *
-     * @param string   $html
-     * @param string[] $parts
-     * @param string   $htmlReplaced
+     * @param string $html
+     * @param string $expected
      *
      * @return void
      */
-    public function testRestoreInlines(string $html, array $parts, string $htmlReplaced)
+    public function testRestoreInlines(string $html, string $expected)
     {
-        $hc = new HtmlContent($html, new Config($this->config));
+        $hc = new Content($html, new Config($this->config));
         $hc->removeInlines()->restoreInlines();
-        $this->assertSame($html, (string)$hc);
+        $this->assertSame($expected, (string)$hc);
     }
 
     /**
@@ -374,7 +379,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testInlineParts(string $html, array $expected, string $htmlReplaced)
     {
-        $hc = new class($html, new Config($this->config)) extends HtmlContent
+        $hc = new class($html, new Config($this->config)) extends Content
         {
             /**
              * @return null|array <int, string>
@@ -398,7 +403,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testRemoveExtraWhitespace(string $html, string $expected)
     {
-        $hc = new HtmlContent($html, new Config());
+        $hc = new Content($html, new Config());
 
         $this->assertSame($expected, (string)$hc->removeExtraWhitespace());
     }
@@ -413,7 +418,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testIndent(string $html, string $expected)
     {
-        $hc = new HtmlContent($html, new Config($this->config));
+        $hc = new Content($html, new Config($this->config));
         $this->assertSame($expected, (string)$hc->indent());
     }
 
@@ -427,7 +432,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testIndentWithLog(string $html, array $expected)
     {
-        $hc = new HtmlContent($html, new Config($this->config));
+        $hc = new Content($html, new Config($this->config));
         $this->assertSame($expected, $hc->useLog()->indent()->getLog());
     }
 
@@ -441,23 +446,25 @@ final class HtmlContentTest extends TestCase
      */
     public function testIndentException(string $html, string $output)
     {
-        $hc = new class($html, new Config($this->config)) extends HtmlContent
+        $hc = new class($html, new Config($this->config)) extends Content
         {
             /**
-             * Indent wrapper.
+             * Constructor.
              *
-             * @return \Navindex\HtmlFormatter\HtmlContent
+             * @param null|string                   $content Text to be processed
+             * @param \Navindex\SimpleConfig\Config $config  Configuration settings
+             *
+             * @return void
              */
-            public function _indentCaller(): HtmlContent
+            public function __construct(?string $content, Config $config)
             {
-                $this->patterns[7]['pattern'] = '/^[xxx]$/';
-                $this->patterns[8]['pattern'] = '/^[xxx]$/';
-                return $this->indent();
+                parent::__construct($content, $config);
+                $this->patterns[0]['pattern'] = '/^(xxx)$/';
             }
         };
 
         $this->expectException(IndentException::class);
-        $hc->_indentCaller();
+        $hc->indent();
     }
 
     /**
@@ -472,7 +479,7 @@ final class HtmlContentTest extends TestCase
      */
     public function testWhen(bool $value, string $originalContent, string $newContent, string $expected)
     {
-        $hc = new class($originalContent, new Config()) extends HtmlContent
+        $hc = new class($originalContent, new Config()) extends Content
         {
             /**
              * @param string $content
@@ -655,10 +662,10 @@ final class HtmlContentTest extends TestCase
                 </body></html>
             INPUT,
             [
-                'lang = "en_AU"',
+                'lang="en_AU"',
                 'data-controller="html-load"',
-                'charset  ="utf-8  "',
-                'http-equiv=   "X-UA-Compatible"',
+                'charset="utf-8  "',
+                'http-equiv="X-UA-Compatible"',
                 'content="IE=edge"',
                 'name="viewport"',
                 'content="width=device-width, initial-scale=1, shrink-to-fit=no"',
@@ -720,6 +727,73 @@ final class HtmlContentTest extends TestCase
      *
      * @return \Iterator <int, array <int, string|array>>
      */
+    public function providerRestoreAttributes(): Iterator
+    {
+        yield [
+            <<<INPUT
+            <html lang = "en_AU" data-controller="html-load">
+                <head>
+                    <meta charset  ="utf-8  ">
+                    <meta http-equiv=   "X-UA-Compatible" content="IE=edge">
+                    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                    <script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript" defer ></script>
+                    <meta name='auth' content=1
+                            id="auth">
+                    <title>
+                        Edit product
+                    </title>
+                    <link rel="stylesheet" href="http://localhost/common-vendor.css">
+                    <link rel="stylesheet" href="http://localhost/css/dashboard.css">
+                    <meta name="robots" content="noindex" />>
+                </head>
+                <body>
+                    <a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" reserveAspectRatio="xMidYMid meet" viewBox="0 0 111.62013 21.110666" >
+                        <g class="a">
+                            <path d="m30.286 20.4727h-4.264v-19.8613h4.264z" />
+                        </g>
+                    </svg>
+                    <button data-anibutton-label="Deleting..." data-action="click->anibutton#confirm" data-anibutton-confirm="Are you sure you want to delete this product?">
+                        Delete
+                    </button>
+                </body></html>
+            INPUT,
+            <<<OUTPUT
+            <html lang="en_AU" data-controller="html-load">
+                <head>
+                    <meta charset="utf-8">
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                    <script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript" defer ></script>
+                    <meta name='auth' content=1
+                            id="auth">
+                    <title>
+                        Edit product
+                    </title>
+                    <link rel="stylesheet" href="http://localhost/common-vendor.css">
+                    <link rel="stylesheet" href="http://localhost/css/dashboard.css">
+                    <meta name="robots" content="noindex" />>
+                </head>
+                <body>
+                    <a class="header-brand order-last" href="http://localhost/dashboard/" >   Dashboard   </a>
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" reserveAspectRatio="xMidYMid meet" viewBox="0 0 111.62013 21.110666" >
+                        <g class="a">
+                            <path d="m30.286 20.4727h-4.264v-19.8613h4.264z" />
+                        </g>
+                    </svg>
+                    <button data-anibutton-label="Deleting..." data-action="click->anibutton#confirm" data-anibutton-confirm="Are you sure you want to delete this product?">
+                        Delete
+                    </button>
+                </body></html>
+            OUTPUT,
+        ];
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return \Iterator <int, array <int, string|array>>
+     */
     public function providerAttributeConfig(): Iterator
     {
         yield [
@@ -739,10 +813,10 @@ final class HtmlContentTest extends TestCase
             INPUT,
             ['trim' => true],
             <<<OUTPUT
-            <html lang = "en_AU">
+            <html lang="en_AU">
                 <head>
-                    <meta charset  ="utf-8">
-                    <meta http-equiv=   "X-UA-Compatible" content="IE=edge">
+                    <meta charset="utf-8">
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
                     <meta name='viewport' content="width=device-width,    initial-scale=1,
                         shrink-to-fit=no">
                     <meta name='auth' content=1
@@ -770,10 +844,10 @@ final class HtmlContentTest extends TestCase
             INPUT,
             ['trim' => true, 'cleanup' => true],
             <<<OUTPUT
-            <html lang = "en_AU">
+            <html lang="en_AU">
                 <head>
-                    <meta charset  ="utf-8">
-                    <meta http-equiv=   "X-UA-Compatible" content="IE=edge">
+                    <meta charset="utf-8">
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
                     <meta name='viewport' content="width=device-width, initial-scale=1, shrink-to-fit=no">
                     <meta name='auth' content=1
                             id="auth">
@@ -895,17 +969,16 @@ final class HtmlContentTest extends TestCase
                 <a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>
                 <br><br />
                 <span>This is <strong>bold</strong>.</span>
-                <button data-anibutton-label="Deleting..." data-action="click->anibutton#confirm" data-anibutton-confirm="Are you sure you want to delete this product?">
+                <button data-anibutton-label="Deleting..." data-action="click-anibutton#confirm" data-anibutton-confirm="Are you sure you want to delete this product?">
                     Delete
                 </button>
             </body>
             INPUT,
             [
-                '<a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>',
+                '<a class="  header-brand   order-last " href="http://localhost/dashboard/">Dashboard</a>',
                 '<strong>bold</strong>',
-                '<button data-anibutton-label="Deleting..." data-action="click->anibutton#confirm" ' .
-                    'data-anibutton-confirm="Are you sure you want to delete this product?">' .
-                    PHP_EOL . '        Delete' . PHP_EOL . '    </button>',
+                '<button data-anibutton-label="Deleting..." data-action="click-anibutton#confirm" ' .
+                    'data-anibutton-confirm="Are you sure you want to delete this product?">Delete</button>',
                 '<span>This is ᐃinline:1:inlineᐃ.</span>'
             ],
             <<<OUTPUT
@@ -914,6 +987,35 @@ final class HtmlContentTest extends TestCase
                 <br><br />
                 ᐃinline:3:inlineᐃ
                 ᐃinline:2:inlineᐃ
+            </body>
+            OUTPUT,
+        ];
+    }
+
+    /**
+     * Data provider.
+     *
+     * @return \Iterator <int, array <int, string|array>>
+     */
+    public function providerRestoreInlines(): Iterator
+    {
+        yield [
+            <<<INPUT
+            <body>
+                <a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>
+                <br><br />
+                <span>This is <strong>bold</strong>.</span>
+                <button data-anibutton-label="Deleting..." data-action="click-anibutton#confirm" data-anibutton-confirm="Are you sure you want to delete this product?">
+                    Delete
+                </button>
+            </body>
+            INPUT,
+            <<<OUTPUT
+            <body>
+                <a class="  header-brand   order-last " href="http://localhost/dashboard/">Dashboard</a>
+                <br><br />
+                <span>This is <strong>bold</strong>.</span>
+                <button data-anibutton-label="Deleting..." data-action="click-anibutton#confirm" data-anibutton-confirm="Are you sure you want to delete this product?">Delete</button>
             </body>
             OUTPUT,
         ];
@@ -989,10 +1091,10 @@ final class HtmlContentTest extends TestCase
             <<<OUTPUT
             <svg
                 xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink" >
+                xmlns:xlink="http://www.w3.org/1999/xlink">
                 <g class="a">
-                    <path d="m30.286 20.4727h-4.264v-19.8613h4.264z"              />
-                    <path d="m33.8616 20.472v-19.8613h4.264v16.56h8.6107v3.3013z" />
+                    <path d="m30.286 20.4727h-4.264v-19.8613h4.264z"/>
+                    <path d="m33.8616 20.472v-19.8613h4.264v16.56h8.6107v3.3013z"/>
                 </g>
             </svg>
             OUTPUT,
@@ -1022,7 +1124,7 @@ final class HtmlContentTest extends TestCase
                             id="auth">
                 </head>
                 <body>
-                    <a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>
+                    <a class="  header-brand   order-last " href="http://localhost/dashboard/">Dashboard</a>
                 </body>
             </html>
             OUTPUT,
@@ -1046,45 +1148,38 @@ final class HtmlContentTest extends TestCase
             INPUT,
             [
                 [
-                    'rule'    => 'INCREASE INDENT',
-                    'pattern' => 'OPENING TAG',
+                    'rule'    => 'OPENING TAG: increase indent',
                     'subject' => '<html>' . PHP_EOL . '<head> something </head>' . PHP_EOL . '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
                     'matches' => "<html>",
                 ],
                 [
-                    'rule'    => 'DISCARD',
-                    'pattern' => 'WHITESPACE',
+                    'rule'    => 'WHITESPACE: discard',
                     'subject' => PHP_EOL . '<head> something </head>' . PHP_EOL . '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
                     'matches' => PHP_EOL,
                 ],
                 [
 
-                    'rule'    => 'KEEP INDENT',
-                    'pattern' => 'BLOCK TAG',
+                    'rule'    => 'BLOCK TAG: keep indent',
                     'subject' => '<head> something </head>' . PHP_EOL . '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
                     'matches' => '<head> something </head>',
                 ],
                 [
-                    'rule' => 'DISCARD',
-                    'pattern' => 'WHITESPACE',
+                    'rule'    => 'WHITESPACE: discard',
                     'subject' => PHP_EOL . '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
                     'matches' => PHP_EOL,
                 ],
                 [
-                    'rule' => 'KEEP INDENT',
-                    'pattern' => 'BLOCK TAG',
+                    'rule'    => 'BLOCK TAG: keep indent',
                     'subject' => '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
                     'matches' => '<body> something,' . PHP_EOL . 'something else </body>',
                 ],
                 [
-                    'rule' => 'DISCARD',
-                    'pattern' => 'WHITESPACE',
+                    'rule'    => 'WHITESPACE: discard',
                     'subject' => PHP_EOL . '</html>',
                     'matches' => PHP_EOL,
                 ],
                 [
-                    'rule' => 'DECREASE INDENT',
-                    'pattern' => 'CLOSING TAG',
+                    'rule'    => 'CLOSING TAG: decrease indent',
                     'subject' => '</html>',
                     'matches' => '</html>',
                 ],

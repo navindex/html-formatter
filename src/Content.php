@@ -11,13 +11,14 @@ use Navindex\SimpleConfig\Config;
 /**
  * HTML content.
  */
-class HtmlContent
+class Content
 {
     const
         KEEP_INDENT     = 0,
-        DECREASE_INDENT = 1,
-        INCREASE_INDENT = 2,
-        DISCARD         = 3;
+        CREATE_BLOCK    = 1,
+        DECREASE_INDENT = 2,
+        INCREASE_INDENT = 3,
+        DISCARD         = 4;
 
     const
         PRE       = 'pre',
@@ -26,59 +27,43 @@ class HtmlContent
         INLINE    = 'inline';
 
     /**
-     * Rule descriptions for logging.
-     *
-     * @var string[]
-     */
-    protected $ruleDesc = [
-        'KEEP INDENT',
-        'DECREASE INDENT',
-        'INCREASE INDENT',
-        'DISCARD',
-    ];
-
-    /**
      * Regex patterns and instructions.
      *
      * @var array[]
      */
     protected $patterns = [
         [
-            'pattern' => Pattern::IS_BLOCK,
-            'rule'    => self::KEEP_INDENT,
-            'name'    => 'BLOCK TAG',
-        ], [
-            'pattern' => Pattern::IS_DOCTYPE,
-            'rule'    => self::KEEP_INDENT,
-            'name'    => 'DOCTYPE',
-        ], [
-            'pattern' => null,
-            'rule'    => self::KEEP_INDENT,
-            'name'    => 'EMPTY TAG',
+            'pattern' => Pattern::IS_WHITESPACE,
+            'rule'    => self::DISCARD,
+            'name'    => 'WHITESPACE: discard',
         ], [
             'pattern' => Pattern::IS_MARKER,
             'rule'    => self::KEEP_INDENT,
-            'name'    => 'MARKER',
+            'name'    => 'MARKER: keep indent',
+        ], [
+            'pattern' => null,
+            'rule'    => self::KEEP_INDENT,
+            'name'    => 'SELF CLOSING: keep indent',
+        ], [
+            'pattern' => Pattern::IS_BLOCK,
+            'rule'    => self::KEEP_INDENT,
+            'name'    => 'BLOCK TAG: keep indent',
+        ], [
+            'pattern' => Pattern::IS_DOCTYPE,
+            'rule'    => self::KEEP_INDENT,
+            'name'    => 'DOCTYPE: keep indent',
         ], [
             'pattern' => Pattern::IS_OPENING,
             'rule'    => self::INCREASE_INDENT,
-            'name'    => 'OPENING TAG',
+            'name'    => 'OPENING TAG: increase indent',
         ], [
             'pattern' => Pattern::IS_CLOSING,
             'rule'    => self::DECREASE_INDENT,
-            'name'    => 'CLOSING TAG',
-        ], [
-            'pattern' => Pattern::IS_EMPTY_CLOSING,
-            'rule'    => self::DECREASE_INDENT,
-            'name'    => 'CLOSING EMPTY TAG',
-        ], [
-            'pattern' => Pattern::IS_WHITESPACE,
-            'rule'    => self::DISCARD,
-            'name'    => 'WHITESPACE',
+            'name'    => 'CLOSING TAG: decrease indent',
         ], [
             'pattern' => Pattern::IS_TEXT,
             'rule'    => self::KEEP_INDENT,
-            'name'    => 'TEXT',
+            'name'    => 'TEXT: keep indent',
         ],
     ];
 
@@ -123,6 +108,7 @@ class HtmlContent
         $this->content = $content ?? '';
         $this->config = $config;
         $this->setPatterns();
+        $this->useLog();
     }
 
     /**
@@ -133,7 +119,7 @@ class HtmlContent
     protected function setPatterns()
     {
         $tags = implode('|', $this->config->get('self-closing.tag', []));
-        $this->patterns[2]['pattern'] = sprintf(Pattern::IS_EMPTY_OPENING, $tags);
+        $this->patterns[2]['pattern'] = sprintf(Pattern::IS_SELFCLOSING, $tags);
     }
 
     /**
@@ -248,28 +234,16 @@ class HtmlContent
             $openingBreak = $this->config->get('formatted.opening-break', false);
             $closingBreak = $this->config->get('formatted.closing-break', false);
             $trim = $this->config->get('formatted.trim', false);
-            $eol = $this->config->get('line-break', PHP_EOL);
 
             foreach ($matches[0] as $index => &$value) {
-                // Process formatted elements
                 $tag = $matches[1][$index];
-                $content = $originalContent = $matches[2][$index];
+                $originalContent = $matches[2][$index];
+                $config = $this->config->split("formatted.tag.{$tag}");
 
-                if ($this->config->get("formatted.tag.{$tag}.trim", $trim)) {
-                    $content = trim($content);
-                }
-
-                if ($this->config->get("formatted.tag.{$tag}.opening-break", $openingBreak)) {
-                    $content = Helper::start($content, $eol);
-                }
-
-                if ($this->config->get("formatted.tag.{$tag}.closing-break", $closingBreak)) {
-                    $content = Helper::finish($content, $eol);
-                }
-
-                if ($this->config->get("formatted.tag.{$tag}.cleanup-empty", $cleanupEmpty)) {
-                    $content = empty(trim($content)) ? '' : $content;
-                }
+                $content = $this->action($originalContent, $config, 'trim', $trim);
+                $content = $this->action($content, $config, 'opening-break', $openingBreak);
+                $content = $this->action($content, $config, 'closing-break', $closingBreak);
+                $content = $this->action($content, $config, 'cleanup-empty', $cleanupEmpty);
 
                 if ($content !== $originalContent) {
                     $value = str_replace($originalContent, $content, $value);
@@ -289,19 +263,12 @@ class HtmlContent
     {
         return $this->remove(static::ATTRIBUTE, Pattern::ATTRIBUTE, function (array $matches) {
             foreach ($matches[0] as $index => &$value) {
-                // Remove whitespace around the equal sign
+                $config = $this->config->split('attributes');
 
-                if ($this->config->get('attributes.cleanup', false)) {
-                    $attrValue = preg_replace(Pattern::WHITESPACE, ' ', $matches[3][$index]) ?? $matches[3][$index];
-                    $value = str_replace($matches[3][$index], $attrValue, $value);
-                    $matches[3][$index] = $attrValue;
-                }
+                $content = $this->action($matches[3][$index], $config, 'cleanup', false);
+                $content = $this->action($content, $config, 'trim', false);
 
-                if ($this->config->get('attributes.trim', false)) {
-                    $attrValue = trim($matches[3][$index]);
-                    $value = str_replace($matches[3][$index], $attrValue, $value);
-                    $matches[3][$index] = $attrValue;
-                }
+                $value = $matches[1][$index] . '=' . $matches[2][$index] . $content . $matches[2][$index];
             }
 
             return $matches;
@@ -317,16 +284,14 @@ class HtmlContent
     {
         return $this->remove(static::CDATA, Pattern::CDATA, function (array $matches) {
             foreach ($matches[0] as $index => &$value) {
-                if ($this->config->get('cdata.cleanup', false)) {
-                    $content = preg_replace(Pattern::WHITESPACE, ' ', $matches[1][$index]) ?? $matches[1][$index];
-                    $value = str_replace($matches[1][$index], $content, $value);
-                    $matches[1][$index] = $content;
-                }
+                $originalContent = $matches[1][$index];
+                $config = $this->config->split('cdata');
 
-                if ($this->config->get('cdata.trim', false)) {
-                    $content = trim($matches[1][$index]);
-                    $value = str_replace($matches[1][$index], $content, $value);
-                    $matches[1][$index] = $content;
+                $content = $this->action($originalContent, $config, 'cleanup', false);
+                $content = $this->action($content, $config, 'trim', false);
+
+                if ($content !== $originalContent) {
+                    $value = str_replace($originalContent, $content, $value);
                 }
             }
 
@@ -345,8 +310,20 @@ class HtmlContent
 
         return $this->deepRemove(static::INLINE, $pattern, function (array $matches) {
             foreach ($matches[0] as $index => &$value) {
-                // $attrValue = trim($matches[3][$index]);
-                // $value = str_replace($matches[3][$index], $attrValue, $value);
+                $originalAttributes = $matches[2][$index];
+                $attributes = trim($originalAttributes);
+                $attributes = empty($attributes) ? '' : Helper::start(trim($originalAttributes), ' ');
+
+                $originalContent = $matches[3][$index];
+                $content = trim($originalContent);
+
+                if ($attributes . $content !== $originalAttributes . $originalContent) {
+                    $value = str_replace(
+                        $originalAttributes . '>' . $originalContent,
+                        $attributes . '>' . $content,
+                        $value
+                    );
+                }
             }
 
             return $matches;
@@ -427,6 +404,45 @@ class HtmlContent
     }
 
     /**
+     * Run a specific action on the content.
+     *
+     * @param string                        $content
+     * @param \Navindex\SimpleConfig\Config $config
+     * @param string                        $action
+     * @param mixed                         $default
+     *
+     * @return string
+     */
+    protected function action(string $content, Config $config, string $action, $default): string
+    {
+        if ($config->get($action, $default)) {
+            switch ($action) {
+                case 'cleanup':
+                    $content = preg_replace(Pattern::WHITESPACE, ' ', $content) ?? $content;
+                    break;
+
+                case 'trim':
+                    $content = trim($content);
+                    break;
+
+                case 'opening-break':
+                    $content = Helper::start($content, $this->config->get('line-break', PHP_EOL));
+                    break;
+
+                case 'closing-break':
+                    $content = Helper::finish($content, $this->config->get('line-break', PHP_EOL));
+                    break;
+
+                case 'cleanup-empty':
+                    $content = empty(trim($content)) ? '' : $content;
+                    break;
+            }
+        }
+
+        return $content;
+    }
+
+    /**
      * Content indenting.
      *
      * @throws \Navindex\HtmlFormatter\Exceptions\IndentException
@@ -447,7 +463,7 @@ class HtmlContent
                     $rule = $action['rule'];
 
                     if ($this->logger) {
-                        $this->logger->push($this->ruleDesc[$rule], $action['name'], $subject, $matches[0]);
+                        $this->logger->push($action['name'], $subject, $matches[0]);
                     }
 
                     $subject = mb_substr($subject, mb_strlen($matches[0]));
@@ -461,6 +477,11 @@ class HtmlContent
         if ('' !== $subject) {
             throw new IndentException('Unable to create the indented content.', $subject);
         }
+
+        $output = preg_replace(Pattern::TRAILING_SPACE_IN_OPENING_TAG, '\1\2', $output) ?? $output;
+        $output = preg_replace(Pattern::SPACE_BEFORE_CLOSING_TAG, '\1\2', $output) ?? $output;
+        $output = preg_replace(Pattern::SPACE_AFTER_OPENING_TAG, '\1\2', $output) ?? $output;
+        $output = preg_replace(Pattern::TRAILING_LINE_SPACE, '\1\2', $output) ?? $output;
 
         $this->content = $output;
 

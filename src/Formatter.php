@@ -2,7 +2,7 @@
 
 namespace Navindex\HtmlFormatter;
 
-use Navindex\HtmlFormatter\HtmlContent;
+use Navindex\HtmlFormatter\Content;
 use Navindex\SimpleConfig\Config;
 
 /**
@@ -63,7 +63,7 @@ class Formatter
             'opening-break' => true,
         ],
         'attributes' => [
-            'cleanup' => false,
+            'cleanup' => true,
         ],
     ];
 
@@ -158,7 +158,7 @@ class Formatter
         $config = $this->config ?? new Config();
         $config->merge($beautifyConfig, Config::MERGE_KEEP);
 
-        $html = new HtmlContent($input, $config);
+        $html = new Content($input, $config);
 
         return $html
             ->removeFormatted()
@@ -188,7 +188,7 @@ class Formatter
         $config = $this->config ?? new Config();
         $config->merge($minifyConfig, Config::MERGE_KEEP);
 
-        $html = new HtmlContent($input, $config);
+        $html = new Content($input, $config);
 
         return $html
             ->removeFormatted()

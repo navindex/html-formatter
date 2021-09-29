@@ -15,10 +15,9 @@ class Content
 {
     const
         KEEP_INDENT     = 0,
-        CREATE_BLOCK    = 1,
-        DECREASE_INDENT = 2,
-        INCREASE_INDENT = 3,
-        DISCARD         = 4;
+        DECREASE_INDENT = 1,
+        INCREASE_INDENT = 2,
+        DISCARD         = 3;
 
     const
         PRE       = 'pre',

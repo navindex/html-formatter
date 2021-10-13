@@ -373,6 +373,32 @@ final class FormatterTest extends TestCase
             </form>
             OUTPUT,
         ];
+        yield [
+            <<<INPUT
+            <ul>
+            <li><input type="text"></li>
+            <li><input type="text" ></li>
+            <li><input type="text"/></li>
+            <li><input type="text" /></li>
+            </ul>
+            INPUT,
+            <<<OUTPUT
+            <ul>
+                <li>
+                    <input type="text">
+                </li>
+                <li>
+                    <input type="text">
+                </li>
+                <li>
+                    <input type="text"/>
+                </li>
+                <li>
+                    <input type="text"/>
+                </li>
+            </ul>
+            OUTPUT,
+        ];
     }
 
     /**

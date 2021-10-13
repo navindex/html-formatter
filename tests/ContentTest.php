@@ -1195,7 +1195,129 @@ final class ContentTest extends TestCase
                 </body>
             </html>
             OUTPUT,
-
+        ];
+        yield [
+            <<<INPUT
+            <ul>
+            <li><input type="text"></li>
+            <li><input type="text" ></li>
+            <li><input type="text"/></li>
+            <li><input type="text" /></li>
+            </ul>
+            INPUT,
+            [
+                [
+                    'rule'    => 'OPENING TAG: increase indent',
+                    'subject' => '<ul>' . PHP_EOL . '<li><input type="text"></li>' . PHP_EOL . '<li><input type="text" ></li>' . PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => "<ul>",
+                ],
+                [
+                    'rule'    => 'WHITESPACE: discard',
+                    'subject' => PHP_EOL . '<li><input type="text"></li>' . PHP_EOL . '<li><input type="text" ></li>' . PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => PHP_EOL,
+                ],
+                [
+                    'rule'    => 'OPENING TAG: increase indent',
+                    'subject' => '<li><input type="text"></li>' . PHP_EOL . '<li><input type="text" ></li>' . PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '<li>',
+                ],
+                [
+                    'rule'    => 'SELF CLOSING: keep indent',
+                    'subject' => '<input type="text"></li>' . PHP_EOL . '<li><input type="text" ></li>' . PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '<input type="text">',
+                ],
+                [
+                    'rule'    => 'CLOSING TAG: decrease indent',
+                    'subject' => '</li>' . PHP_EOL . '<li><input type="text" ></li>' . PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '</li>',
+                ],
+                [
+                    'rule'    => 'WHITESPACE: discard',
+                    'subject' => PHP_EOL . '<li><input type="text" ></li>' . PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => PHP_EOL,
+                ],
+                [
+                    'rule'    => 'OPENING TAG: increase indent',
+                    'subject' => '<li><input type="text" ></li>' . PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '<li>',
+                ],
+                [
+                    'rule'    => 'SELF CLOSING: keep indent',
+                    'subject' => '<input type="text" ></li>' . PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '<input type="text" >',
+                ],
+                [
+                    'rule'    => 'CLOSING TAG: decrease indent',
+                    'subject' => '</li>' . PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '</li>',
+                ],
+                [
+                    'rule'    => 'WHITESPACE: discard',
+                    'subject' => PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => PHP_EOL,
+                ],
+                [
+                    'rule'    => 'OPENING TAG: increase indent',
+                    'subject' => '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '<li>',
+                ],
+                [
+                    'rule'    => 'SELF CLOSING: keep indent',
+                    'subject' => '<input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '<input type="text"/>',
+                ],
+                [
+                    'rule'    => 'CLOSING TAG: decrease indent',
+                    'subject' => '</li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '</li>',
+                ],
+                [
+                    'rule'    => 'WHITESPACE: discard',
+                    'subject' => PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => PHP_EOL,
+                ],
+                [
+                    'rule'    => 'OPENING TAG: increase indent',
+                    'subject' => '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '<li>',
+                ],
+                [
+                    'rule'    => 'SELF CLOSING: keep indent',
+                    'subject' => '<input type="text" /></li>' . PHP_EOL . '</ul>',
+                    'matches' => '<input type="text" />',
+                ],
+                [
+                    'rule'    => 'CLOSING TAG: decrease indent',
+                    'subject' => '</li>' . PHP_EOL . '</ul>',
+                    'matches' => '</li>',
+                ],
+                [
+                    'rule'    => 'WHITESPACE: discard',
+                    'subject' => PHP_EOL . '</ul>',
+                    'matches' => PHP_EOL,
+                ],
+                [
+                    'rule'    => 'CLOSING TAG: decrease indent',
+                    'subject' => '</ul>',
+                    'matches' => '</ul>',
+                ],
+            ],
+            <<<OUTPUT
+            <ul>
+                <li>
+                    <input type="text">
+                </li>
+                <li>
+                    <input type="text" >
+                </li>
+                <li>
+                    <input type="text"/>
+                </li>
+                <li>
+                    <input type="text" />
+                </li>
+            </ul>
+            OUTPUT,
         ];
     }
 

@@ -175,17 +175,17 @@ final class FormatterTest extends TestCase
                     <script src="http://localhost/js/manifest.js?id=8f036cd511d2b70af1d3" type="text/javascript"></script>
                     <meta name='auth' content=1 id="auth">
                     <title>Edit product</title>
-                    <script>
+            <script>
             Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement('style'), rxEsc = /([.*+?^$()|\[\]\/\\])/g
             </script>
                     <meta name="robots" content="noindex"/>
                 </head>
                 <body>
-                    <pre>
+            <pre>
                something
                     comes
                     here </pre>
-                    <textarea>
+            <textarea>
                         something comes
                         here too </textarea>
                     <div class="container-fluid" data-controller="base">
@@ -397,6 +397,20 @@ final class FormatterTest extends TestCase
                     <input type="text"/>
                 </li>
             </ul>
+            OUTPUT,
+        ];
+        yield [
+            <<<INPUT
+                <h1>This is text</h1><h2>This is some other text <span class="nowrap">inside span</span>.</h2>
+                <h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>
+                <h5>This is some other text <span class="nowrap">inside span</span> . </h5>
+            INPUT,
+            <<<OUTPUT
+            <h1>This is text</h1>
+            <h2>This is some other text <span class="nowrap">inside span</span>.</h2>
+            <h3>This is text</h3>
+            <h4>This is some other text<span class="nowrap">inside span</span> .</h4>
+            <h5>This is some other text <span class="nowrap">inside span</span> .</h5>
             OUTPUT,
         ];
     }

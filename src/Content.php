@@ -15,10 +15,9 @@ class Content
 {
     const
         KEEP_INDENT     = 0,
-        NO_INDENT       = 1,
-        DECREASE_INDENT = 2,
-        INCREASE_INDENT = 3,
-        DISCARD         = 4;
+        DECREASE_INDENT = 1,
+        INCREASE_INDENT = 2,
+        DISCARD         = 3;
 
     const
         PRE       = 'pre',
@@ -29,7 +28,7 @@ class Content
     /**
      * Regex patterns and instructions.
      *
-     * @var array[]
+     * @var array<array<string,string|integer|null>>
      */
     protected $patterns = [
         [
@@ -38,8 +37,8 @@ class Content
             'name'    => 'WHITESPACE: discard',
         ], [
             'pattern' => Pattern::IS_MARKER,
-            'rule'    => self::NO_INDENT,
-            'name'    => 'MARKER: no indent',
+            'rule'    => self::KEEP_INDENT,
+            'name'    => 'MARKER: keep indent',
         ], [
             'pattern' => null,
             'rule'    => self::KEEP_INDENT,
@@ -358,7 +357,12 @@ class Content
      */
     public function restoreFormatted(): self
     {
-        return $this->restore(static::PRE);
+        $this->restore(static::PRE);
+
+        $tags = array_keys($this->config->get('formatted.tag', []));
+        $this->content = preg_replace(sprintf(Pattern::MOVE_TO_LEFT, implode('|', $tags)), '\1', $this->content) ?? $this->content;
+
+        return $this;
     }
 
     /**
@@ -504,25 +508,21 @@ class Content
         }
 
         $tab = $this->config->get('tab', '');
-        $eol = $this->config->get('line-break', PHP_EOL);
 
         switch ($rule) {
             case static::INCREASE_INDENT:
-                $output = str_repeat($tab, $position++) . $match . $eol;
+                $indent = str_repeat($tab, $position++);
                 break;
             case static::DECREASE_INDENT:
                 $position = --$position < 0 ? 0 : $position;
-                $output = str_repeat($tab, $position) . $match . $eol;
-                break;
-            case static::NO_INDENT:
-                $output = $match . $eol;
+                $indent = str_repeat($tab, $position);
                 break;
             default:
-                $output = str_repeat($tab, $position) . $match . $eol;
+                $indent = str_repeat($tab, $position);
                 break;
         }
 
-        return $output;
+        return $indent . $match . $this->config->get('line-break', PHP_EOL);
     }
 
     /**

@@ -606,18 +606,18 @@ final class ContentTest extends TestCase
                     <title>
                         Edit product
                     </title>
-                    <script>
+            <script>
             Sfdump = window.Sfdump || (function (doc) \{ var refStyle = doc.createElement('style'), rxEsc = /([.*+?^$()|\[\]\/\\])/g
             </script>
 
                     <meta name="robots" content="noindex" />>
                 </head>
                 <body>
-                    <pre>
+            <pre>
                something
                     comes
                     here </pre>
-                    <textarea>
+            <textarea>
                         something comes
                         here too </textarea>
                 </body></html>
@@ -1184,17 +1184,6 @@ final class ContentTest extends TestCase
                     'matches' => '</html>',
                 ],
             ],
-            <<<OUTPUT
-            <html>
-                <head>
-                    something
-                </head>
-                <body>
-                    something,
-                    something else
-                </body>
-            </html>
-            OUTPUT,
         ];
         yield [
             <<<INPUT
@@ -1209,7 +1198,7 @@ final class ContentTest extends TestCase
                 [
                     'rule'    => 'OPENING TAG: increase indent',
                     'subject' => '<ul>' . PHP_EOL . '<li><input type="text"></li>' . PHP_EOL . '<li><input type="text" ></li>' . PHP_EOL . '<li><input type="text"/></li>' . PHP_EOL . '<li><input type="text" /></li>' . PHP_EOL . '</ul>',
-                    'matches' => "<ul>",
+                    'matches' => '<ul>',
                 ],
                 [
                     'rule'    => 'WHITESPACE: discard',
@@ -1302,22 +1291,89 @@ final class ContentTest extends TestCase
                     'matches' => '</ul>',
                 ],
             ],
-            <<<OUTPUT
-            <ul>
-                <li>
-                    <input type="text">
-                </li>
-                <li>
-                    <input type="text" >
-                </li>
-                <li>
-                    <input type="text"/>
-                </li>
-                <li>
-                    <input type="text" />
-                </li>
-            </ul>
-            OUTPUT,
+        ];
+        yield[
+            <<<INPUT
+            <h1>This is text</h1><h2>This is some other text <span class="nowrap">inside span</span>.</h2>
+            <h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>
+            INPUT,
+            [
+                [
+                    'rule'    => 'BLOCK TAG: keep indent',
+                    'subject' => '<h1>This is text</h1><h2>This is some other text <span class="nowrap">inside span</span>.</h2>' . PHP_EOL . '<h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => '<h1>This is text</h1>',
+                ],
+                [
+                    'rule'    => 'OPENING TAG: increase indent',
+                    'subject' => '<h2>This is some other text <span class="nowrap">inside span</span>.</h2>' . PHP_EOL . '<h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => '<h2>',
+                ],
+                [
+                    'rule'    => 'TEXT: keep indent',
+                    'subject' => 'This is some other text <span class="nowrap">inside span</span>.</h2>' . PHP_EOL . '<h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => 'This is some other text ',
+                ],
+                [
+                    'rule'    => 'BLOCK TAG: keep indent',
+                    'subject' => '<span class="nowrap">inside span</span>.</h2>' . PHP_EOL . '<h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => '<span class="nowrap">inside span</span>',
+                ],
+                [
+                    'rule'    => 'TEXT: keep indent',
+                    'subject' => '.</h2>' . PHP_EOL . '<h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => '.',
+                ],
+                [
+                    'rule'    => 'CLOSING TAG: decrease indent',
+                    'subject' => '</h2>' . PHP_EOL . '<h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => '</h2>',
+                ],
+                [
+                    'rule'    => 'WHITESPACE: discard',
+                    'subject' => PHP_EOL . '<h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => PHP_EOL,
+                ],
+                [
+                    'rule'    => 'BLOCK TAG: keep indent',
+                    'subject' => '<h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => '<h3> This is text</h3>',
+                ],
+                [
+                    'rule'    => 'OPENING TAG: increase indent',
+                    'subject' => '<h4> This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => '<h4>',
+                ],
+                [
+                    'rule'    => 'WHITESPACE: discard',
+                    'subject' => ' This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => ' ',
+                ],
+                [
+                    'rule'    => 'TEXT: keep indent',
+                    'subject' => 'This is some other text<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => 'This is some other text',
+                ],
+                [
+                    'rule'    => 'BLOCK TAG: keep indent',
+                    'subject' => '<span class="nowrap">inside span</span> . </h4>',
+                    'matches' => '<span class="nowrap">inside span</span>',
+                ],
+                [
+                    'rule'    => 'WHITESPACE: discard',
+                    'subject' => ' . </h4>',
+                    'matches' => ' ',
+                ],
+                [
+                    'rule'    => 'TEXT: keep indent',
+                    'subject' => '. </h4>',
+                    'matches' => '. ',
+                ],
+                [
+                    'rule'    => 'CLOSING TAG: decrease indent',
+                    'subject' => '</h4>',
+                    'matches' => '</h4>',
+                ],
+            ],
         ];
     }
 

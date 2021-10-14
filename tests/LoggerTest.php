@@ -25,11 +25,10 @@ final class LoggerTest extends TestCase
     /**
      * @dataProvider providerPushSingle
      *
-     * @param mixed   $rule
-     * @param mixed   $subject
-     * @param mixed   $matches
-     * @param mixed[] $expected
-     *
+     * @param  mixed   $rule
+     * @param  mixed   $subject
+     * @param  mixed   $matches
+     * @param  mixed[] $expected
      * @return void
      */
     public function testPushSingle($rule, $subject, $matches, array $expected)
@@ -43,9 +42,8 @@ final class LoggerTest extends TestCase
     /**
      * @dataProvider providerPushMulti
      *
-     * @param array[] $data
-     * @param array[] $expected
-     *
+     * @param  array[] $data
+     * @param  array[] $expected
      * @return void
      */
     public function testPushMulti(array $data, array $expected)
@@ -62,11 +60,10 @@ final class LoggerTest extends TestCase
     /**
      * @dataProvider providerPushSingle
      *
-     * @param mixed   $rule
-     * @param mixed   $subject
-     * @param mixed   $matches
-     * @param mixed[] $expected
-     *
+     * @param  mixed   $rule
+     * @param  mixed   $subject
+     * @param  mixed   $matches
+     * @param  mixed[] $expected
      * @return void
      */
     public function testClearSingle($rule, $subject, $matches, array $expected)
@@ -81,9 +78,8 @@ final class LoggerTest extends TestCase
     /**
      * @dataProvider providerPushMulti
      *
-     * @param array[] $data
-     * @param array[] $expected
-     *
+     * @param  array[] $data
+     * @param  array[] $expected
      * @return void
      */
     public function testClearMulti(array $data, array $expected)
@@ -110,18 +106,18 @@ final class LoggerTest extends TestCase
                 [
                     'rule'    => 'my_rule',
                     'subject' => 'my_subject',
-                    'matches' => 'my_matches'
-                ]
-            ]
+                    'matches' => 'my_matches',
+                ],
+            ],
         ];
         yield [
             false, -12, ['something', 6, null, true], [
                 [
                     'rule'    => false,
                     'subject' => -12,
-                    'matches' => ['something', 6, null, true]
-                ]
-            ]
+                    'matches' => ['something', 6, null, true],
+                ],
+            ],
         ];
     }
 
@@ -142,20 +138,20 @@ final class LoggerTest extends TestCase
                 [
                     'rule'    => 'my_rule',
                     'subject' => 'my_subject',
-                    'matches' => 'my_matches'
+                    'matches' => 'my_matches',
                 ],
                 [
                     'rule'    => false,
                     'subject' => null,
-                    'matches' => ['something', 6, null, true]
+                    'matches' => ['something', 6, null, true],
                 ],
                 [
                     'rule'    => [],
                     'subject' => 0,
-                    'matches' => ''
-                ]
+                    'matches' => '',
+                ],
 
-            ]
+            ],
         ];
     }
 }

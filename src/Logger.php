@@ -39,10 +39,9 @@ class Logger
     /**
      * Creates a new log entry.
      *
-     * @param mixed $rule
-     * @param mixed $subject
-     * @param mixed $matches
-     *
+     * @param  mixed $rule
+     * @param  mixed $subject
+     * @param  mixed $matches
      * @return self
      */
     public function push($rule, $subject, $matches): self

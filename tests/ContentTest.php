@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Navindex\HtmlFormatter\Tests;
 
 use Iterator;
-use Navindex\HtmlFormatter\Exceptions\IndentException;
 use Navindex\HtmlFormatter\Content;
+use Navindex\HtmlFormatter\Exceptions\IndentException;
 use Navindex\SimpleConfig\Config;
 use PHPUnit\Framework\TestCase;
 
@@ -59,8 +59,7 @@ final class ContentTest extends TestCase
     /**
      * @dataProvider providerConstructor
      *
-     * @param string $html
-     *
+     * @param  string $html
      * @return void
      */
     public function testConstructorContent(string $html)
@@ -91,14 +90,13 @@ final class ContentTest extends TestCase
     /**
      * @dataProvider providerConstructor
      *
-     * @param string $html
-     *
+     * @param  string $html
      * @return void
      */
     public function testContentToString(string $html)
     {
         $hc = new Content($html, new Config($this->config));
-        $this->assertSame($html, (string)$hc);
+        $this->assertSame($html, (string) $hc);
     }
 
     /**
@@ -131,26 +129,24 @@ final class ContentTest extends TestCase
     /**
      * @dataProvider providerFormatted
      *
-     * @param string   $html
-     * @param string[] $parts
-     * @param string   $expected
-     *
+     * @param  string   $html
+     * @param  string[] $parts
+     * @param  string   $expected
      * @return void
      */
     public function testRemoveFormatted(string $html, array $parts, string $expected)
     {
         $hc = new Content($html, new Config($this->config));
         $hc->removeFormatted();
-        $this->assertSame($expected, (string)$hc);
+        $this->assertSame($expected, (string) $hc);
     }
 
     /**
      * @dataProvider providerFormatted
      *
-     * @param string   $html
-     * @param string[] $expected
-     * @param string   $htmlReplaced
-     *
+     * @param  string   $html
+     * @param  string[] $expected
+     * @param  string   $htmlReplaced
      * @return void
      */
     public function testFormattedParts(string $html, array $expected, string $htmlReplaced)
@@ -172,62 +168,58 @@ final class ContentTest extends TestCase
     /**
      * @dataProvider providerRestoreFormatted
      *
-     * @param string   $html
-     * @param string   $expected
-     *
+     * @param  string $html
+     * @param  string $expected
      * @return void
      */
     public function testRestoreFormatted(string $html, string $expected)
     {
         $hc = new Content($html, new Config($this->config));
         $hc->removeFormatted()->restoreFormatted();
-        $this->assertSame($expected, (string)$hc);
+        $this->assertSame($expected, (string) $hc);
     }
 
     /**
      * @dataProvider providerAttributes
      *
-     * @param string   $html
-     * @param string[] $parts
-     * @param string   $expected
-     *
+     * @param  string   $html
+     * @param  string[] $parts
+     * @param  string   $expected
      * @return void
      */
     public function testRemoveAttributes(string $html, array $parts, string $expected)
     {
         $hc = new Content($html, new Config());
-        $this->assertSame($expected, (string)$hc->removeAttributes());
+        $this->assertSame($expected, (string) $hc->removeAttributes());
     }
 
     /**
      * @dataProvider providerRestoreAttributes
      *
-     * @param string $html
-     * @param string $expected
-     *
+     * @param  string $html
+     * @param  string $expected
      * @return void
      */
     public function testRestoreAttributes(string $html, string $expected)
     {
-        $config =       [
+        $config = [
             'attributes' => [
                 'trim' => true,
                 'cleanup' => true,
-            ]
+            ],
         ];
 
         $hc = new Content($html, new Config($config));
         $hc->removeAttributes()->restoreAttributes();
-        $this->assertSame($expected, (string)$hc);
+        $this->assertSame($expected, (string) $hc);
     }
 
     /**
      * @dataProvider providerAttributes
      *
-     * @param string   $html
-     * @param string[] $expected
-     * @param string   $htmlReplaced
-     *
+     * @param  string   $html
+     * @param  string[] $expected
+     * @param  string   $htmlReplaced
      * @return void
      */
     public function testAttributeParts(string $html, array $expected, string $htmlReplaced)
@@ -249,10 +241,9 @@ final class ContentTest extends TestCase
     /**
      * @dataProvider providerAttributeConfig
      *
-     * @param string                   $html
-     * @param array <string, string[]> $config
-     * @param string                   $expected
-     *
+     * @param  string                   $html
+     * @param  array <string, string[]> $config
+     * @param  string                   $expected
      * @return void
      */
     public function testAttributeConfig(string $html, array $config, string $expected)
@@ -261,47 +252,44 @@ final class ContentTest extends TestCase
         $c['attributes'] = $config;
         $hc = new Content($html, new Config($c));
         $hc->removeAttributes()->restoreAttributes();
-        $this->assertSame($expected, (string)$hc);
+        $this->assertSame($expected, (string) $hc);
     }
 
     /**
      * @dataProvider providerCdata
      *
-     * @param string   $html
-     * @param string[] $parts
-     * @param string   $expected
-     *
+     * @param  string   $html
+     * @param  string[] $parts
+     * @param  string   $expected
      * @return void
      */
     public function testRemoveCdata(string $html, array $parts, string $expected)
     {
         $hc = new Content($html, new Config());
-        $this->assertSame($expected, (string)$hc->removeCdata());
+        $this->assertSame($expected, (string) $hc->removeCdata());
     }
 
     /**
      * @dataProvider providerCdata
      *
-     * @param string   $html
-     * @param string[] $parts
-     * @param string   $htmlReplaced
-     *
+     * @param  string   $html
+     * @param  string[] $parts
+     * @param  string   $htmlReplaced
      * @return void
      */
     public function testRestoreCdata(string $html, array $parts, string $htmlReplaced)
     {
         $hc = new Content($html, new Config());
         $hc->removeCdata()->restoreCdata();
-        $this->assertSame($html, (string)$hc);
+        $this->assertSame($html, (string) $hc);
     }
 
     /**
      * @dataProvider providerCdata
      *
-     * @param string   $html
-     * @param string[] $expected
-     * @param string   $htmlReplaced
-     *
+     * @param  string   $html
+     * @param  string[] $expected
+     * @param  string   $htmlReplaced
      * @return void
      */
     public function testCdataParts(string $html, array $expected, string $htmlReplaced)
@@ -323,10 +311,9 @@ final class ContentTest extends TestCase
     /**
      * @dataProvider providerCdataConfig
      *
-     * @param string                   $html
-     * @param array <string, string[]> $config
-     * @param string                   $expected
-     *
+     * @param  string                   $html
+     * @param  array <string, string[]> $config
+     * @param  string                   $expected
      * @return void
      */
     public function testCdataConfig(string $html, array $config, string $expected)
@@ -335,46 +322,43 @@ final class ContentTest extends TestCase
         $c['cdata'] = $config;
         $hc = new Content($html, new Config($c));
         $hc->removeCdata()->restoreCdata();
-        $this->assertSame($expected, (string)$hc);
+        $this->assertSame($expected, (string) $hc);
     }
 
     /**
      * @dataProvider providerInlines
      *
-     * @param string   $html
-     * @param string[] $parts
-     * @param string   $expected
-     *
+     * @param  string   $html
+     * @param  string[] $parts
+     * @param  string   $expected
      * @return void
      */
     public function testRemoveInlines(string $html, array $parts, string $expected)
     {
         $hc = new Content($html, new Config($this->config));
-        $this->assertSame($expected, (string)$hc->removeInlines());
+        $this->assertSame($expected, (string) $hc->removeInlines());
     }
 
     /**
      * @dataProvider providerRestoreInlines
      *
-     * @param string $html
-     * @param string $expected
-     *
+     * @param  string $html
+     * @param  string $expected
      * @return void
      */
     public function testRestoreInlines(string $html, string $expected)
     {
         $hc = new Content($html, new Config($this->config));
         $hc->removeInlines()->restoreInlines();
-        $this->assertSame($expected, (string)$hc);
+        $this->assertSame($expected, (string) $hc);
     }
 
     /**
      * @dataProvider providerInlines
      *
-     * @param string   $html
-     * @param string[] $expected
-     * @param string   $htmlReplaced
-     *
+     * @param  string   $html
+     * @param  string[] $expected
+     * @param  string   $htmlReplaced
      * @return void
      */
     public function testInlineParts(string $html, array $expected, string $htmlReplaced)
@@ -396,38 +380,35 @@ final class ContentTest extends TestCase
     /**
      * @dataProvider providerWhitespace
      *
-     * @param string $html
-     * @param string $expected
-     *
+     * @param  string $html
+     * @param  string $expected
      * @return void
      */
     public function testRemoveExtraWhitespace(string $html, string $expected)
     {
         $hc = new Content($html, new Config());
 
-        $this->assertSame($expected, (string)$hc->removeExtraWhitespace());
+        $this->assertSame($expected, (string) $hc->removeExtraWhitespace());
     }
 
     /**
      * @dataProvider providerIndent
      *
-     * @param string $html
-     * @param string $expected
-     *
+     * @param  string $html
+     * @param  string $expected
      * @return void
      */
     public function testIndent(string $html, string $expected)
     {
         $hc = new Content($html, new Config($this->config));
-        $this->assertSame($expected, (string)$hc->indent());
+        $this->assertSame($expected, (string) $hc->indent());
     }
 
     /**
      * @dataProvider providerIndentWithLog
      *
-     * @param string $html
-     * @param array[] $expected
-     *
+     * @param  string  $html
+     * @param  array[] $expected
      * @return void
      */
     public function testIndentWithLog(string $html, array $expected)
@@ -439,9 +420,8 @@ final class ContentTest extends TestCase
     /**
      * @dataProvider providerIndent
      *
-     * @param string $html
-     * @param string $output
-     *
+     * @param  string $html
+     * @param  string $output
      * @return void
      */
     public function testIndentException(string $html, string $output)
@@ -451,9 +431,8 @@ final class ContentTest extends TestCase
             /**
              * Constructor.
              *
-             * @param null|string                   $content Text to be processed
-             * @param \Navindex\SimpleConfig\Config $config  Configuration settings
-             *
+             * @param  null|string                   $content Text to be processed
+             * @param  \Navindex\SimpleConfig\Config $config  Configuration settings
              * @return void
              */
             public function __construct(?string $content, Config $config)
@@ -470,11 +449,10 @@ final class ContentTest extends TestCase
     /**
      * @dataProvider providerWhen
      *
-     * @param bool   $value
-     * @param string $originalContent
-     * @param string $newContent
-     * @param string $expected
-     *
+     * @param  bool   $value
+     * @param  string $originalContent
+     * @param  string $newContent
+     * @param  string $expected
      * @return void
      */
     public function testWhen(bool $value, string $originalContent, string $newContent, string $expected)
@@ -482,13 +460,13 @@ final class ContentTest extends TestCase
         $hc = new class($originalContent, new Config()) extends Content
         {
             /**
-             * @param string $content
-             *
+             * @param  string $content
              * @return self
              */
             public function _setContent(string $content): self
             {
                 $this->content = $content;
+
                 return $this;
             }
         };
@@ -497,7 +475,7 @@ final class ContentTest extends TestCase
             $html->_setContent($newContent);
         });
 
-        $this->assertSame($expected, (string)$hc);
+        $this->assertSame($expected, (string) $hc);
     }
 
     /**
@@ -548,7 +526,7 @@ final class ContentTest extends TestCase
                 '<pre>' . PHP_EOL . '   something' . PHP_EOL . '        comes' . PHP_EOL . '        here </pre>',
                 '<textarea>' . PHP_EOL . '            something comes' . PHP_EOL . '            here too </textarea>',
             ],
-            <<<OUTPUT
+            <<<'OUTPUT'
             <html>
                 <head>
                     ᐃpre:0:preᐃ
@@ -633,7 +611,7 @@ final class ContentTest extends TestCase
     public function providerAttributes(): Iterator
     {
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <html lang = "en_AU" data-controller="html-load">
                 <head>
                     <meta charset  ="utf-8  ">
@@ -691,7 +669,7 @@ final class ContentTest extends TestCase
                 'data-action="click->anibutton#confirm"',
                 'data-anibutton-confirm="Are you sure you want to delete this product?"',
             ],
-            <<<OUTPUT
+            <<<'OUTPUT'
             <html ᐃattr:0:attrᐃ ᐃattr:1:attrᐃ>
                 <head>
                     <meta ᐃattr:2:attrᐃ>
@@ -730,7 +708,7 @@ final class ContentTest extends TestCase
     public function providerRestoreAttributes(): Iterator
     {
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <html lang = "en_AU" data-controller="html-load">
                 <head>
                     <meta charset  ="utf-8  ">
@@ -758,7 +736,7 @@ final class ContentTest extends TestCase
                     </button>
                 </body></html>
             INPUT,
-            <<<OUTPUT
+            <<<'OUTPUT'
             <html lang="en_AU" data-controller="html-load">
                 <head>
                     <meta charset="utf-8">
@@ -797,7 +775,7 @@ final class ContentTest extends TestCase
     public function providerAttributeConfig(): Iterator
     {
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <html lang = "  en_AU">
                 <head>
                     <meta charset  ="utf-8 ">
@@ -812,7 +790,7 @@ final class ContentTest extends TestCase
                 </body></html>
             INPUT,
             ['trim' => true],
-            <<<OUTPUT
+            <<<'OUTPUT'
             <html lang="en_AU">
                 <head>
                     <meta charset="utf-8">
@@ -828,7 +806,7 @@ final class ContentTest extends TestCase
             OUTPUT,
         ];
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <html lang = "  en_AU">
                 <head>
                     <meta charset  ="utf-8 ">
@@ -843,7 +821,7 @@ final class ContentTest extends TestCase
                 </body></html>
             INPUT,
             ['trim' => true, 'cleanup' => true],
-            <<<OUTPUT
+            <<<'OUTPUT'
             <html lang="en_AU">
                 <head>
                     <meta charset="utf-8">
@@ -867,7 +845,7 @@ final class ContentTest extends TestCase
     public function providerCdata(): Iterator
     {
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <style><![CDATA[
                     .a {
@@ -883,7 +861,7 @@ final class ContentTest extends TestCase
             [
                 '<![CDATA[' . PHP_EOL . '        .a {' . PHP_EOL . '            fill: #28231d;' . PHP_EOL . '        }' . PHP_EOL . '    ]]>',
             ],
-            <<<OUTPUT
+            <<<'OUTPUT'
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <style>ᐃcdata:0:cdataᐃ</style>
                 <g class="a">
@@ -903,7 +881,7 @@ final class ContentTest extends TestCase
     public function providerCdataConfig(): Iterator
     {
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <style><![CDATA[
                     .a {
@@ -917,7 +895,7 @@ final class ContentTest extends TestCase
             </svg>
             INPUT,
             ['trim' => true],
-            <<<OUTPUT
+            <<<'OUTPUT'
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <style><![CDATA[.a {
                         fill: #28231d;
@@ -930,7 +908,7 @@ final class ContentTest extends TestCase
             OUTPUT,
         ];
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <style><![CDATA[
                     .a {
@@ -944,7 +922,7 @@ final class ContentTest extends TestCase
             </svg>
             INPUT,
             ['trim' => true, 'cleanup' => true],
-            <<<OUTPUT
+            <<<'OUTPUT'
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <style><![CDATA[.a { fill: #28231d; }]]></style>
                 <g class="a">
@@ -964,7 +942,7 @@ final class ContentTest extends TestCase
     public function providerInlines(): Iterator
     {
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <body>
                 <a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>
                 <br><br />
@@ -979,9 +957,9 @@ final class ContentTest extends TestCase
                 '<strong>bold</strong>',
                 '<button data-anibutton-label="Deleting..." data-action="click-anibutton#confirm" ' .
                     'data-anibutton-confirm="Are you sure you want to delete this product?">Delete</button>',
-                '<span>This is ᐃinline:1:inlineᐃ.</span>'
+                '<span>This is ᐃinline:1:inlineᐃ.</span>',
             ],
-            <<<OUTPUT
+            <<<'OUTPUT'
             <body>
                 ᐃinline:0:inlineᐃ
                 <br><br />
@@ -1000,7 +978,7 @@ final class ContentTest extends TestCase
     public function providerRestoreInlines(): Iterator
     {
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <body>
                 <a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>
                 <br><br />
@@ -1010,7 +988,7 @@ final class ContentTest extends TestCase
                 </button>
             </body>
             INPUT,
-            <<<OUTPUT
+            <<<'OUTPUT'
             <body>
                 <a class="  header-brand   order-last " href="http://localhost/dashboard/">Dashboard</a>
                 <br><br />
@@ -1029,7 +1007,7 @@ final class ContentTest extends TestCase
     public function providerWhitespace(): Iterator
     {
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink" >
@@ -1050,7 +1028,7 @@ final class ContentTest extends TestCase
                 '<path d="m33.8616 20.472v-19.8613h4.264v16.56h8.6107v3.3013z" /> </g> </svg>',
         ];
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <html lang = "  en_AU">
                 <head>
                     <meta charset  ="utf-8  ">
@@ -1080,7 +1058,7 @@ final class ContentTest extends TestCase
     public function providerIndent(): Iterator
     {
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink" >
@@ -1088,7 +1066,7 @@ final class ContentTest extends TestCase
                 <path d="m33.8616 20.472v-19.8613h4.264v16.56h8.6107v3.3013z" /></g>
             </svg>
             INPUT,
-            <<<OUTPUT
+            <<<'OUTPUT'
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -1100,7 +1078,7 @@ final class ContentTest extends TestCase
             OUTPUT,
         ];
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <html lang = "  en_AU">
                 <head>
                     <meta charset  ="utf-8  ">
@@ -1113,7 +1091,7 @@ final class ContentTest extends TestCase
                 <a class="  header-brand   order-last " href="http://localhost/dashboard/" >   Dashboard   </a>
                 </body></html>
             INPUT,
-            <<<OUTPUT
+            <<<'OUTPUT'
             <html lang = "  en_AU">
                 <head>
                     <meta charset  ="utf-8  ">
@@ -1139,7 +1117,7 @@ final class ContentTest extends TestCase
     public function providerIndentWithLog(): Iterator
     {
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <html>
             <head> something </head>
             <body> something,
@@ -1150,7 +1128,7 @@ final class ContentTest extends TestCase
                 [
                     'rule'    => 'OPENING TAG: increase indent',
                     'subject' => '<html>' . PHP_EOL . '<head> something </head>' . PHP_EOL . '<body> something,' . PHP_EOL . 'something else </body>' . PHP_EOL . '</html>',
-                    'matches' => "<html>",
+                    'matches' => '<html>',
                 ],
                 [
                     'rule'    => 'WHITESPACE: discard',
@@ -1186,7 +1164,7 @@ final class ContentTest extends TestCase
             ],
         ];
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <ul>
             <li><input type="text"></li>
             <li><input type="text" ></li>
@@ -1293,7 +1271,7 @@ final class ContentTest extends TestCase
             ],
         ];
         yield[
-            <<<INPUT
+            <<<'INPUT'
             <h1>This is text</h1><h2>This is some other text <span class="nowrap">inside span</span>.</h2>
             <h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>
             INPUT,

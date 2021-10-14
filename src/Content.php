@@ -15,9 +15,10 @@ class Content
 {
     const
         KEEP_INDENT     = 0,
-        DECREASE_INDENT = 1,
-        INCREASE_INDENT = 2,
-        DISCARD         = 3;
+        NO_INDENT       = 1,
+        DECREASE_INDENT = 2,
+        INCREASE_INDENT = 3,
+        DISCARD         = 4;
 
     const
         PRE       = 'pre',
@@ -37,8 +38,8 @@ class Content
             'name'    => 'WHITESPACE: discard',
         ], [
             'pattern' => Pattern::IS_MARKER,
-            'rule'    => self::KEEP_INDENT,
-            'name'    => 'MARKER: keep indent',
+            'rule'    => self::NO_INDENT,
+            'name'    => 'MARKER: no indent',
         ], [
             'pattern' => null,
             'rule'    => self::KEEP_INDENT,
@@ -512,6 +513,9 @@ class Content
             case static::DECREASE_INDENT:
                 $position = --$position < 0 ? 0 : $position;
                 $output = str_repeat($tab, $position) . $match . $eol;
+                break;
+            case static::NO_INDENT:
+                $output = $match . $eol;
                 break;
             default:
                 $output = str_repeat($tab, $position) . $match . $eol;

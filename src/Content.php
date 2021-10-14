@@ -10,23 +10,15 @@ use Navindex\SimpleConfig\Config;
  */
 class Content
 {
-    const
-        KEEP_INDENT = 0;
-    const
-        DECREASE_INDENT = 1;
-    const
-        INCREASE_INDENT = 2;
-    const
-        DISCARD = 3;
+    const KEEP_INDENT = 0;
+    const DECREASE_INDENT = 1;
+    const INCREASE_INDENT = 2;
+    const DISCARD = 3;
 
-    const
-        PRE = 'pre';
-    const
-        ATTRIBUTE = 'attr';
-    const
-        CDATA = 'cdata';
-    const
-        INLINE = 'inline';
+    const PRE = 'pre';
+    const ATTRIBUTE = 'attr';
+    const CDATA = 'cdata';
+    const INLINE = 'inline';
 
     /**
      * Regex patterns and instructions.

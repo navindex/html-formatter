@@ -32,6 +32,7 @@ class Formatter
         'formatted' => [
             'tag' => [
                 'script' => [],
+                'style' => [],
                 'pre' => [],
                 'textarea' => [],
             ],

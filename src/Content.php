@@ -28,7 +28,7 @@ class Content
     /**
      * Regex patterns and instructions.
      *
-     * @var array<array<string,string|integer|null>>
+     * @var array[]
      */
     protected $patterns = [
         [
@@ -462,18 +462,20 @@ class Content
 
         do {
             foreach ($this->patterns as $action) {
-                $match = preg_match($action['pattern'], $subject, $matches);
-                if (1 === $match) {
-                    $rule = $action['rule'];
+                if (is_string($action['pattern'])) {
+                    $match =  preg_match($action['pattern'], $subject, $matches);
+                    if (1 === $match) {
+                        $rule = $action['rule'];
 
-                    if ($this->logger) {
-                        $this->logger->push($action['name'], $subject, $matches[0]);
+                        if ($this->logger) {
+                            $this->logger->push($action['name'], $subject, $matches[0]);
+                        }
+
+                        $subject = mb_substr($subject, mb_strlen($matches[0]));
+                        $output .= $this->indentAction($pos, $rule, $matches[0]);
+
+                        break;
                     }
-
-                    $subject = mb_substr($subject, mb_strlen($matches[0]));
-                    $output .= $this->indentAction($pos, $rule, $matches[0]);
-
-                    break;
                 }
             }
         } while ($match);

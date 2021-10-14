@@ -3,9 +3,6 @@
 namespace Navindex\HtmlFormatter;
 
 use Navindex\HtmlFormatter\Exceptions\IndentException;
-use Navindex\HtmlFormatter\Helper;
-use Navindex\HtmlFormatter\Logger;
-use Navindex\HtmlFormatter\Pattern;
 use Navindex\SimpleConfig\Config;
 
 /**
@@ -14,16 +11,22 @@ use Navindex\SimpleConfig\Config;
 class Content
 {
     const
-        KEEP_INDENT     = 0,
-        DECREASE_INDENT = 1,
-        INCREASE_INDENT = 2,
-        DISCARD         = 3;
+        KEEP_INDENT = 0;
+    const
+        DECREASE_INDENT = 1;
+    const
+        INCREASE_INDENT = 2;
+    const
+        DISCARD = 3;
 
     const
-        PRE       = 'pre',
-        ATTRIBUTE = 'attr',
-        CDATA     = 'cdata',
-        INLINE    = 'inline';
+        PRE = 'pre';
+    const
+        ATTRIBUTE = 'attr';
+    const
+        CDATA = 'cdata';
+    const
+        INLINE = 'inline';
 
     /**
      * Regex patterns and instructions.
@@ -97,9 +100,8 @@ class Content
     /**
      * Constructor.
      *
-     * @param null|string                   $content Text to be processed
-     * @param \Navindex\SimpleConfig\Config $config  Configuration settings
-     *
+     * @param  null|string                   $content Text to be processed
+     * @param  \Navindex\SimpleConfig\Config $config  Configuration settings
      * @return void
      */
     public function __construct(?string $content, Config $config)
@@ -144,10 +146,9 @@ class Content
     /**
      * Removes parts of the content by pattern.
      *
-     * @param string        $type     Part type to remove
-     * @param string        $pattern  Regex pattern
-     * @param callable|null $callback Process the matches
-     *
+     * @param  string        $type     Part type to remove
+     * @param  string        $pattern  Regex pattern
+     * @param  callable|null $callback Process the matches
      * @return self
      */
     public function remove(string $type, string $pattern, callable $callback = null): self
@@ -162,10 +163,9 @@ class Content
     /**
      * Removes parts of the content by pattern in multiple steps.
      *
-     * @param string        $type     Part type to remove
-     * @param string        $pattern  Regex pattern
-     * @param callable|null $callback Process the matches
-     *
+     * @param  string        $type     Part type to remove
+     * @param  string        $pattern  Regex pattern
+     * @param  callable|null $callback Process the matches
      * @return self
      */
     public function deepRemove(string $type, string $pattern, callable $callback = null): self
@@ -185,12 +185,11 @@ class Content
     /**
      * Core function to remove parts.
      *
-     * @param string        $type        Part type to remove
-     * @param string        $placeholder Part type to remove
-     * @param string        $pattern     Regex pattern
-     * @param callable|null $callback    Process the matches
-     * @param int|null      $offset      Index offset
-     *
+     * @param  string        $type        Part type to remove
+     * @param  string        $placeholder Part type to remove
+     * @param  string        $pattern     Regex pattern
+     * @param  callable|null $callback    Process the matches
+     * @param  int|null      $offset      Index offset
      * @return void
      */
     protected function removeCore(
@@ -332,8 +331,7 @@ class Content
     /**
      * Restores the content parts.
      *
-     * @param string $type Part type to restore
-     *
+     * @param  string $type Part type to restore
      * @return self
      */
     public function restore(string $type): self
@@ -410,11 +408,10 @@ class Content
     /**
      * Run a specific action on the content.
      *
-     * @param string                        $content
-     * @param \Navindex\SimpleConfig\Config $config
-     * @param string                        $action
-     * @param mixed                         $default
-     *
+     * @param  string                        $content
+     * @param  \Navindex\SimpleConfig\Config $config
+     * @param  string                        $action
+     * @param  mixed                         $default
      * @return string
      */
     protected function action(string $content, Config $config, string $action, $default): string
@@ -449,9 +446,9 @@ class Content
     /**
      * Content indenting.
      *
-     * @throws \Navindex\HtmlFormatter\Exceptions\IndentException
-     *
      * @return self
+     *
+     * @throws \Navindex\HtmlFormatter\Exceptions\IndentException
      */
     public function indent(): self
     {
@@ -463,7 +460,7 @@ class Content
         do {
             foreach ($this->patterns as $action) {
                 if (is_string($action['pattern'])) {
-                    $match =  preg_match($action['pattern'], $subject, $matches);
+                    $match = preg_match($action['pattern'], $subject, $matches);
                     if (1 === $match) {
                         $rule = $action['rule'];
 
@@ -497,10 +494,9 @@ class Content
     /**
      * Indenter core.
      *
-     * @param integer $position
-     * @param integer $rule
-     * @param string  $match
-     *
+     * @param  int    $position
+     * @param  int    $rule
+     * @param  string $match
      * @return string
      */
     protected function indentAction(int &$position, int $rule, string $match): string
@@ -540,8 +536,7 @@ class Content
     /**
      * Enables internal logging.
      *
-     * @param bool|null $useIt
-     *
+     * @param  bool|null $useIt
      * @return self
      */
     public function useLog(?bool $useIt = true): self
@@ -554,9 +549,8 @@ class Content
     /**
      * Apply the callback if the value is truthy.
      *
-     * @param bool     $value
-     * @param callable $callback
-     *
+     * @param  bool     $value
+     * @param  callable $callback
      * @return static
      */
     public function when(bool $value, callable $callback)

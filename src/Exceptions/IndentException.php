@@ -9,9 +9,8 @@ class IndentException extends RuntimeException
     /**
      * Create a new exception instance.
      *
-     * @param string $message
-     * @param string $leftover
-     *
+     * @param  string $message
+     * @param  string $leftover
      * @return void
      */
     public function __construct(string $message, ?string $leftover = null)

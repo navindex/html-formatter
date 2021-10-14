@@ -16,10 +16,9 @@ final class IndentExceptionTest extends TestCase
     /**
      * @dataProvider providerIndentExceptionMessage
      *
-     * @param string      $message
-     * @param string|null $data
-     * @param string      $expected
-     *
+     * @param  string      $message
+     * @param  string|null $data
+     * @param  string      $expected
      * @return void
      */
     public function testIndentException(string $message, ?string $data, string $expected)

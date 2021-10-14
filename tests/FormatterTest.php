@@ -17,9 +17,8 @@ final class FormatterTest extends TestCase
     /**
      * @dataProvider providerConstructor
      *
-     * @param null|mixed[] $config
-     * @param \Navindex\SimpleConfig\Config $expected
-     *
+     * @param  null|mixed[]                  $config
+     * @param  \Navindex\SimpleConfig\Config $expected
      * @return void
      */
     public function testConstructor(?array $config, Config $expected)
@@ -27,12 +26,12 @@ final class FormatterTest extends TestCase
         $f = new Formatter($config);
         $this->assertSame($expected->toArray(), $f->getConfig()->toArray());
     }
+
     /**
      * @dataProvider providerConfig
      *
-     * @param null|\Navindex\SimpleConfig\Config|mixed[] $config
-     * @param mixed[]                                    $expected
-     *
+     * @param  null|\Navindex\SimpleConfig\Config|mixed[] $config
+     * @param  mixed[]                                    $expected
      * @return void
      */
     public function testConfig($config, array $expected)
@@ -45,9 +44,8 @@ final class FormatterTest extends TestCase
     /**
      * @dataProvider providerBeautify
      *
-     * @param string $html
-     * @param string $expected
-     *
+     * @param  string $html
+     * @param  string $expected
      * @return void
      */
     public function testBeautify(string $html, string $expected)
@@ -59,9 +57,8 @@ final class FormatterTest extends TestCase
     /**
      * @dataProvider providerMinify
      *
-     * @param string $html
-     * @param string $expected
-     *
+     * @param  string $html
+     * @param  string $expected
      * @return void
      */
     public function testMinify(string $html, string $expected)
@@ -200,7 +197,7 @@ final class FormatterTest extends TestCase
             OUTPUT,
         ];
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <form id="post-form"
             class="mb-md-4"
             method="post"
@@ -313,7 +310,7 @@ final class FormatterTest extends TestCase
             </div>
                 </form>
             INPUT,
-            <<<OUTPUT
+            <<<'OUTPUT'
             <form id="post-form" class="mb-md-4" method="post" enctype="multipart/form-data" data-controller="form" data-action="keypress->form#disableKey form#submit" data-form-validation="Please check the entered data and make sure you filled all the required fields." novalidate>
                 <fieldset class="row g-0 mb-3">
                     <div class="col p-0 px-3">
@@ -374,7 +371,7 @@ final class FormatterTest extends TestCase
             OUTPUT,
         ];
         yield [
-            <<<INPUT
+            <<<'INPUT'
             <ul>
             <li><input type="text"></li>
             <li><input type="text" ></li>
@@ -382,7 +379,7 @@ final class FormatterTest extends TestCase
             <li><input type="text" /></li>
             </ul>
             INPUT,
-            <<<OUTPUT
+            <<<'OUTPUT'
             <ul>
                 <li>
                     <input type="text">
@@ -400,12 +397,12 @@ final class FormatterTest extends TestCase
             OUTPUT,
         ];
         yield [
-            <<<INPUT
+            <<<'INPUT'
                 <h1>This is text</h1><h2>This is some other text <span class="nowrap">inside span</span>.</h2>
                 <h3> This is text</h3><h4> This is some other text<span class="nowrap">inside span</span> . </h4>
                 <h5>This is some other text <span class="nowrap">inside span</span> . </h5>
             INPUT,
-            <<<OUTPUT
+            <<<'OUTPUT'
             <h1>This is text</h1>
             <h2>This is some other text <span class="nowrap">inside span</span>.</h2>
             <h3>This is text</h3>

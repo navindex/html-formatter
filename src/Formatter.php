@@ -2,7 +2,6 @@
 
 namespace Navindex\HtmlFormatter;
 
-use Navindex\HtmlFormatter\Content;
 use Navindex\SimpleConfig\Config;
 
 /**
@@ -97,8 +96,7 @@ class Formatter
     /**
      * Constructor.
      *
-     * @param null|mixed[] $config Associative array of option names and values
-     *
+     * @param  null|mixed[] $config Associative array of option names and values
      * @return void
      */
     public function __construct(?array $config = null)
@@ -111,8 +109,7 @@ class Formatter
     /**
      * Sets the formatter config.
      *
-     * @param null|\Navindex\SimpleConfig\Config|mixed[] $config Associative array of option names and values
-     *
+     * @param  null|\Navindex\SimpleConfig\Config|mixed[] $config Associative array of option names and values
      * @return self
      */
     public function setConfig($config): self
@@ -147,8 +144,7 @@ class Formatter
     /**
      * Beautify the HTML code.
      *
-     * @param string $input
-     *
+     * @param  string $input
      * @return string
      */
     public function beautify(string $input): string
@@ -177,8 +173,7 @@ class Formatter
     /**
      * Minify the HTML code.
      *
-     * @param string $input
-     *
+     * @param  string $input
      * @return string
      */
     public function minify(string $input): string

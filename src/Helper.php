@@ -2,15 +2,12 @@
 
 namespace Navindex\HtmlFormatter;
 
-use Navindex\HtmlFormatter\Pattern;
-
 abstract class Helper
 {
     /**
      * Creates placeholder from a word.
      *
-     * @param string $word
-     *
+     * @param  string $word
      * @return string
      */
     public static function placeholder(string $word): string
@@ -23,9 +20,8 @@ abstract class Helper
     /**
      * Caps a string with a single instance of a given value.
      *
-     * @param  string  $value
-     * @param  string  $cap
-     *
+     * @param  string $value
+     * @param  string $cap
      * @return string
      */
     public static function finish(string $value, string $cap): string
@@ -38,26 +34,24 @@ abstract class Helper
     /**
      * Begins a string with a single instance of a given value.
      *
-     * @param  string  $value
-     * @param  string  $prefix
-     *
+     * @param  string $value
+     * @param  string $prefix
      * @return string
      */
     public static function start(string $value, string $prefix): string
     {
         $quoted = preg_quote($prefix, '/');
 
-        return $prefix.preg_replace('/^(?:'.$quoted.')+/u', '', $value);
+        return $prefix . preg_replace('/^(?:' . $quoted . ')+/u', '', $value);
     }
 
     /**
-     * Test if array is an associative array
+     * Test if array is an associative array.
      *
      * Note that this function will return false if an array is empty. Meaning
      * empty arrays will be treated as if they are not associative arrays.
      *
-     * @param mixed[] $array
-     *
+     * @param  mixed[] $array
      * @return bool
      */
     public static function isAssoc(array $array): bool
@@ -68,8 +62,7 @@ abstract class Helper
     /**
      * If the given value is not an array, wrap it in one.
      *
-     * @param mixed $value
-     *
+     * @param  mixed   $value
      * @return mixed[]
      */
     public static function wrap($value)
